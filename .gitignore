@@ -1,0 +1,23 @@
+# Ambiente e dependências
+.venv/
+__pycache__/
+*.pyc
+
+# Modelos e binários, baixados pelo instalador
+modelos/
+llama/
+*.gguf
+*.bin
+
+# 🔴 Dados de quem usa. Nada disto pode ir para o repositório.
+historico.jsonl
+aprendido.json
+dicionario.json
+voz.log
+instancia.lock
+falha-*.wav
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini

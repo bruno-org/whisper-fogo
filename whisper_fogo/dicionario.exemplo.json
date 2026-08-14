@@ -1,0 +1,33 @@
+{
+  "_leia_me": [
+    "Este arquivo e seu. O programa nunca reescreve o que voce poe aqui.",
+    "trocas: o que o reconhecedor escreve, e como deve ficar. Sensivel a caixa.",
+    "maiusculas: marcas cuja unica falha e a caixa. Corrige em qualquer capitalizacao.",
+    "hotwords: termos que o reconhecedor deve esperar ouvir. Nomes de produto, siglas, jargao da sua area.",
+    "expansoes: true faz 'pra' virar 'para' e 'ta' virar 'esta' no texto final.",
+    "Depois de editar, clique em Recarregar dicionario no menu da bandeja.",
+    "O que voce corrigir direto no campo depois de ditar entra sozinho no aprendido.json, sem passar por aqui."
+  ],
+
+  "trocas": {
+    "Cloud Code": "Claude Code",
+    "PlayWrite": "PlayWright",
+    "Verso": "Vercel"
+  },
+
+  "maiusculas": [
+    "GitHub",
+    "PostgreSQL",
+    "JavaScript",
+    "TypeScript"
+  ],
+
+  "hotwords": [
+    "Kubernetes",
+    "PostgreSQL",
+    "endpoint",
+    "deploy"
+  ],
+
+  "expansoes": false
+}
