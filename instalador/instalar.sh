@@ -24,7 +24,7 @@ erro()   { printf "  \033[31m[X]\033[0m  %s\n" "$1"; }
 cat <<'ARTE'
 
   ####   WHISPER FOGO
-  ####   Ditado por voz offline, em portugues do Brasil.
+  ####   Transcricao de voz offline, especializada no portugues brasileiro.
          Instalador para macOS (beta, nunca testado em Mac)
 
 ARTE

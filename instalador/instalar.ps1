@@ -27,7 +27,7 @@ function Erro($t)   { Write-Host "  [X]  $t" -ForegroundColor Red }
 Write-Host @"
 
   ####   WHISPER FOGO
-  ####   Ditado por voz offline, em portugues do Brasil.
+  ####   Transcricao de voz offline, especializada no portugues brasileiro.
          Instalador para Windows
 
 "@ -ForegroundColor Red
