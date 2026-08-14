@@ -291,10 +291,7 @@ Construído sobre [faster-whisper](https://github.com/SYSTRAN/faster-whisper),
 [Gemma](https://ai.google.dev/gemma). A lista de palavras comuns do português vem
 do [FrequencyWords](https://github.com/hermitdave/FrequencyWords).
 
-O comportamento de aprender pela correção foi inspirado no Wispr Flow, que é
-excelente e vale o dinheiro se você fala inglês. Este projeto existe porque quem
-fala português merece a mesma qualidade sem mensalidade e sem mandar a voz para
-fora de casa.
+O comportamento de aprender pela correção foi inspirado no Wispr Flow.
 
 ---
 
