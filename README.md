@@ -9,13 +9,15 @@ Sem nuvem, sem mensalidade, sem enviar suas informações para servidor nenhum.
 
 <br>
 
-<a href="https://github.com/bruno-org/whisper-fogo/raw/main/instalador/Instalar-Whisper-Fogo.bat">
-<img src="https://img.shields.io/badge/Baixar%20para-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Baixar para Windows">
+<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat">
+<img src="https://img.shields.io/badge/Baixar%20para-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Baixar o instalador para Windows">
 </a>
 &nbsp;&nbsp;
-<a href="https://github.com/bruno-org/whisper-fogo/raw/main/instalador/Instalar-Whisper-Fogo.command">
-<img src="https://img.shields.io/badge/Baixar%20para-macOS%20(beta)-999999?style=for-the-badge&logo=apple&logoColor=white" alt="Baixar para macOS">
+<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.command">
+<img src="https://img.shields.io/badge/Baixar%20para-macOS%20(beta)-999999?style=for-the-badge&logo=apple&logoColor=white" alt="Baixar o instalador para macOS">
 </a>
+
+<sub>O arquivo cai direto na sua pasta de downloads. Nada de abrir aba nenhuma.</sub>
 
 <br><br>
 
@@ -117,15 +119,27 @@ a troca de "pra" por "para" e "tá" por "está" no texto final.
 
 ### Para quem só quer usar
 
-Baixe o instalador do seu sistema e dê dois cliques. Ele confere se a sua máquina
-aguenta, instala tudo numa pasta isolada, baixa os modelos, cria o atalho e abre o
-programa. Não mexe em nada fora da pasta dele.
+Clique no botão do seu sistema, o arquivo baixa, e você dá dois cliques nele. O
+instalador confere se a sua máquina aguenta, instala tudo numa pasta isolada,
+baixa os modelos, cria o atalho e abre o programa. Não mexe em nada fora da pasta
+dele.
 
 <div align="center">
 
-[**Baixar para Windows**](https://github.com/bruno-org/whisper-fogo/raw/main/instalador/Instalar-Whisper-Fogo.bat) &nbsp;•&nbsp; [**Baixar para macOS (beta)**](https://github.com/bruno-org/whisper-fogo/raw/main/instalador/Instalar-Whisper-Fogo.command)
+<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat">
+<img src="https://img.shields.io/badge/⬇%20Baixar%20instalador-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Baixar o instalador para Windows">
+</a>
+&nbsp;&nbsp;
+<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.command">
+<img src="https://img.shields.io/badge/⬇%20Baixar%20instalador-macOS%20(beta)-999999?style=for-the-badge&logo=apple&logoColor=white" alt="Baixar o instalador para macOS">
+</a>
 
 </div>
+
+No Windows, o Defender pode perguntar se você confia no arquivo, porque ele não é
+assinado digitalmente. Clique em "Mais informações" e depois em "Executar assim
+mesmo". No macOS, clique com o botão direito no arquivo e escolha **Abrir**, em
+vez de dois cliques, pela mesma razão.
 
 ### Para quem quer mexer no código
 
@@ -146,16 +160,59 @@ copie os `.py` por cima da pasta de instalação.
 
 ### O que a sua máquina precisa ter
 
-|  | Mínimo | Recomendado |
-|---|---|---|
-| Sistema | Windows 10 (64 bits) | Windows 11 |
-| Placa de vídeo | qualquer (roda na CPU, bem mais lento) | NVIDIA com 6 GB de VRAM |
-| Memória | 8 GB | 16 GB |
-| Disco | 4 GB (só transcrição) | 8 GB (com revisão de texto) |
+Os números abaixo foram **medidos**, não estimados: é o consumo real do programa
+transcrevendo, numa RTX 4050 de notebook.
 
-Sem placa NVIDIA o programa funciona, mas transcrever 1 minuto de fala pode levar
-mais de 1 minuto. Com uma GPU modesta, o mesmo minuto sai em poucos segundos. O
-instalador mede a sua máquina e avisa antes de baixar qualquer coisa.
+|  | Mínimo | Recomendado | Ideal |
+|---|---|---|---|
+| **Placa de vídeo** | nenhuma, roda na CPU | NVIDIA com **4 GB** de VRAM | NVIDIA com **6 GB** ou mais |
+| **VRAM livre** | zero | 2,5 GB | 6 GB |
+| **Memória RAM** | 4 GB | 8 GB | 16 GB ou mais |
+| **Disco** | 4 GB | 8 GB | 8 GB |
+| **Velocidade** | ~1,4x o tempo real | ~15x | **~29x** |
+| **O que dá para usar** | só transcrição | transcrição e revisão, uma de cada vez | transcrição e revisão juntas na memória |
+
+**Traduzindo a velocidade:** no mínimo, 1 minuto de fala leva uns 45 segundos para
+virar texto. No ideal, o mesmo minuto sai em 2 segundos. Foram 42 minutos de áudio
+transcritos em 86 segundos no teste.
+
+**Quanto cada parte ocupa da placa**, medido aqui:
+
+| O que carrega | VRAM |
+|---|---|
+| Transcrição, precisão padrão (`float16`) | 2,2 GB |
+| Transcrição, modo econômico (`int8`) | 1,2 GB |
+| Revisão de texto (Gemma 3 4B) | 3,0 GB |
+| As duas ao mesmo tempo | 5,2 GB |
+
+<details>
+<summary><b>Por que precisa ser NVIDIA, e o que acontece com AMD, Intel ou Mac</b></summary>
+
+<br>
+
+O motor de transcrição é o [CTranslate2](https://github.com/OpenNMT/CTranslate2),
+e ele aceita exatamente dois tipos de dispositivo: **CPU e CUDA**. Não existe
+suporte a ROCm (AMD), Metal (Apple), Intel Arc, Vulkan ou OpenCL. Dá para conferir
+em uma linha:
+
+```python
+>>> import ctranslate2
+>>> ctranslate2.get_supported_compute_types("cuda")
+{'float16', 'int8', 'bfloat16', 'float32', ...}
+>>> ctranslate2.get_supported_compute_types("rocm")
+ValueError: unsupported device rocm
+```
+
+Ou seja: se a sua placa não é NVIDIA, ela não vai ser usada, e o programa cai para
+a CPU automaticamente. **Ele funciona**, só que na velocidade da coluna "mínimo".
+Uma Radeon boa não ajuda em nada aqui, e é melhor você saber disso antes de baixar
+4 GB do que depois.
+
+O instalador detecta tudo isso sozinho, mede a sua máquina e avisa antes de baixar
+qualquer coisa. Se não houver GPU utilizável, ele pergunta se você quer instalar
+assim mesmo.
+
+</details>
 
 ---
 
