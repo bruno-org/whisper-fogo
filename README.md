@@ -5,7 +5,7 @@
 **Ditado por voz que roda inteiro na sua máquina, feito para o português do Brasil.**
 
 Você fala, o texto aparece onde o cursor estiver. Em qualquer programa.
-Sem nuvem, sem mensalidade, sem enviar a sua voz para servidor nenhum.
+Sem nuvem, sem mensalidade, sem enviar suas informações para servidor nenhum.
 
 <br>
 
@@ -37,9 +37,9 @@ não entendem a gíria e ainda escrevem "voce" sem acento.
 
 O Whisper Fogo nasceu de uma decisão simples: **o português do Brasil é o idioma
 principal, não um item da lista de suportados.** Tudo aqui foi escolhido pensando
-em quem fala português: o modelo, o dicionário que aprende as suas palavras, a
-revisão de texto que expande "pra" e tira o vício de fala, e até as regras de
-pontuação, que proíbem travessão porque quase ninguém usa em texto de trabalho.
+em quem fala português: o modelo, o dicionário que aprende as suas palavras e até
+as regras de pontuação, que proíbem travessão porque quase ninguém usa em texto
+de trabalho.
 
 E ele roda **inteiro na sua máquina**. Nenhum áudio, nenhuma transcrição e nenhuma
 palavra do seu dicionário saem do seu computador. Não existe conta para criar, não
