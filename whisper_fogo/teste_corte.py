@@ -1,8 +1,8 @@
-"""Prova que o ditado não é mais cortado sozinho no meio da fala.
+"""Garante que o corte de segurança só age sobre a gravação a que pertence.
 
-O bug: cada gravação armava um threading.Timer de corte e nunca o cancelava.
-Um ditado curto deixava a bomba armada, e ela derrubava a gravação seguinte num
-tempo aleatório, que era o "travou aos 20 ou 30 segundos".
+Cada gravação arma um threading.Timer com o tempo máximo. O timer de um ditado
+que já terminou precisa ser cancelado, senão dispara durante o ditado seguinte e
+encerra a fala no meio, num tempo que parece aleatório para quem está falando.
 
 Roda sem microfone e sem GPU: o InputStream é falso e o modelo nunca é chamado.
 """

@@ -250,9 +250,8 @@ class WhisperFogo:
         self.gravando = True
         self.estado("gravando")
         beep(880, 80)
-        # Sem cancelar o timer do ditado anterior, ele continua armado e derruba
-        # a gravação seguinte no meio da fala, num tempo aleatório. Era esta a
-        # causa do ditado "travar" sozinho aos 20 ou 30 segundos.
+        # o timer do ditado anterior tem que morrer aqui: armado, ele encerraria
+        # esta gravação no meio da fala
         self._cancelar_corte()
         self.timer_corte = threading.Timer(MAX_SEGUNDOS, self._corte_seguranca)
         self.timer_corte.start()

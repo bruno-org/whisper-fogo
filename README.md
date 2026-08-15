@@ -9,15 +9,7 @@ Sem nuvem, sem mensalidade, sem enviar suas informações para servidor nenhum.
 
 <br>
 
-<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat">
-<img src="https://img.shields.io/badge/Baixar%20para-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Baixar o instalador para Windows">
-</a>
-&nbsp;&nbsp;
-<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.command">
-<img src="https://img.shields.io/badge/Baixar%20para-macOS%20(beta)-999999?style=for-the-badge&logo=apple&logoColor=white" alt="Baixar o instalador para macOS">
-</a>
-
-<sub>O arquivo cai direto na sua pasta de downloads. Nada de abrir aba nenhuma.</sub>
+<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat"><img src="https://img.shields.io/badge/Baixar%20para-Windows-0078D6?style=for-the-badge&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZiI%2BPHBhdGggZD0iTTAgMy40NDlMOS43NSAyLjF2OS40NTFIMG0xMC45NDktOS42MDJMMjQgMHYxMS40SDEwLjk0OU0wIDEyLjZoOS43NXY5LjQ1MUwwIDIwLjY5OU0xMC45NDkgMTIuNkgyNFYyNGwtMTIuOS0xLjgwMSIvPjwvc3ZnPgo%3D&logoColor=white" alt="Baixar o instalador para Windows"></a>&nbsp;&nbsp;<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.command"><img src="https://img.shields.io/badge/Baixar%20para-macOS%20(beta)-999999?style=for-the-badge&logo=apple&logoColor=white" alt="Baixar o instalador para macOS"></a>
 
 <br><br>
 
@@ -68,6 +60,8 @@ terminal, formulário no navegador. Se o programa aceita texto, ele aceita a sua
 
 <div align="center">
 <img src="docs/img/historico.png" alt="Janela de histórico do Whisper Fogo" width="820">
+<br>
+<sub>O asterisco à esquerda da data marca o ditado que passou pela revisão de texto, a que você aciona somando <code>Alt</code> enquanto fala.</sub>
 </div>
 
 Toda transcrição é salva **antes** de ir para a área de transferência. Se você
@@ -126,13 +120,7 @@ dele.
 
 <div align="center">
 
-<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat">
-<img src="https://img.shields.io/badge/⬇%20Baixar%20instalador-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Baixar o instalador para Windows">
-</a>
-&nbsp;&nbsp;
-<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.command">
-<img src="https://img.shields.io/badge/⬇%20Baixar%20instalador-macOS%20(beta)-999999?style=for-the-badge&logo=apple&logoColor=white" alt="Baixar o instalador para macOS">
-</a>
+<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat"><img src="https://img.shields.io/badge/⬇%20Baixar%20instalador-Windows-0078D6?style=for-the-badge&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZiI%2BPHBhdGggZD0iTTAgMy40NDlMOS43NSAyLjF2OS40NTFIMG0xMC45NDktOS42MDJMMjQgMHYxMS40SDEwLjk0OU0wIDEyLjZoOS43NXY5LjQ1MUwwIDIwLjY5OU0xMC45NDkgMTIuNkgyNFYyNGwtMTIuOS0xLjgwMSIvPjwvc3ZnPgo%3D&logoColor=white" alt="Baixar o instalador para Windows"></a>&nbsp;&nbsp;<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.command"><img src="https://img.shields.io/badge/⬇%20Baixar%20instalador-macOS%20(beta)-999999?style=for-the-badge&logo=apple&logoColor=white" alt="Baixar o instalador para macOS"></a>
 
 </div>
 
@@ -285,11 +273,9 @@ python clip.py          #  3 asserts: área de transferência com acento
 | Aprender pela sua correção | testado | **ainda não**, depende da API de acessibilidade da Apple |
 | Ícone na bandeja | testado | deve funcionar |
 
-Sendo franco: **o Whisper Fogo foi construído e usado no Windows.** O caminho do
-macOS existe, foi escrito com as APIs corretas e está no código, mas nunca rodou
-numa máquina Apple, porque não havia uma para testar. Se você tem um Mac e topa
-ser cobaia, [abra uma issue](https://github.com/bruno-org/whisper-fogo/issues)
-contando o que aconteceu. É a contribuição mais útil possível agora.
+**O Whisper Fogo foi construído e testado no Windows.** O caminho do macOS
+existe, foi escrito com as APIs corretas e está no código, mas ainda está sendo
+testado adequadamente agora, e por isso continua em fase beta.
 
 No macOS o sistema vai pedir duas permissões na primeira execução, em Ajustes,
 Privacidade e Segurança: **Microfone** e **Acessibilidade**. Sem a segunda, o

@@ -1,14 +1,21 @@
-# Instalador do Whisper Fogo para Windows.
+﻿# Instalador do Whisper Fogo para Windows.
 #
-# Faz tudo sozinho: confere se a maquina aguenta, instala o Python isolado,
-# baixa os modelos, cria o atalho e sobe o programa. Nao mexe em nada fora da
-# pasta de instalacao.
+# Faz tudo sozinho: confere se a máquina aguenta, instala o Python isolado,
+# baixa os modelos, cria o atalho e sobe o programa. Não mexe em nada fora da
+# pasta de instalação.
 #
-# Sem acentuacao neste arquivo de proposito: o console do Windows le em CP850 e
-# acento em UTF-8 vira mojibake na tela de quem esta instalando.
+# Este arquivo é UTF-8 com BOM: o PowerShell 5.1 lê .ps1 sem BOM como ANSI e
+# entregaria acento quebrado. A saída do console é forçada para UTF-8 logo
+# abaixo, senão o texto sai como mojibake para quem está instalando.
 
 $ErrorActionPreference = "Stop"
+[Console]::OutputEncoding = New-Object Text.UTF8Encoding $false
 $ProgressPreference = "SilentlyContinue"
+
+# O huggingface_hub cospe sete linhas sobre symlink do Windows em todo download.
+# Nada disso muda o resultado aqui, e só polui a tela de quem está instalando.
+$env:HF_HUB_DISABLE_SYMLINKS_WARNING = "1"
+$env:PYTHONWARNINGS = "ignore"
 
 $DESTINO   = Join-Path $env:LOCALAPPDATA "WhisperFogo"
 $REPO_ZIP  = "https://github.com/bruno-org/whisper-fogo/archive/refs/heads/main.zip"
@@ -27,13 +34,13 @@ function Erro($t)   { Write-Host "  [X]  $t" -ForegroundColor Red }
 Write-Host @"
 
   ####   WHISPER FOGO
-  ####   Transcricao de voz offline, especializada no portugues brasileiro.
+  ####   Transcrição de voz offline, especializada no português brasileiro.
          Instalador para Windows
 
 "@ -ForegroundColor Red
 
 # ----------------------------------------------------------------- requisitos
-Titulo "Conferindo se a sua maquina aguenta"
+Titulo "Conferindo se a sua máquina aguenta"
 
 $problemas = @()
 $avisos = @()
@@ -43,17 +50,17 @@ $os = Get-CimInstance Win32_OperatingSystem
 if ([Environment]::Is64BitOperatingSystem) { Ok "Windows 64 bits: $($os.Caption)" }
 else { $problemas += "O Whisper Fogo precisa de Windows 64 bits." }
 
-# Memoria RAM
+# Memória RAM
 $ramGB = [math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 1)
-if ($ramGB -ge 8) { Ok "Memoria RAM: $ramGB GB" }
-else { $avisos += "Voce tem $ramGB GB de RAM. O recomendado sao 8 GB." }
+if ($ramGB -ge 8) { Ok "Memória RAM: $ramGB GB" }
+else { $avisos += "Você tem $ramGB GB de RAM. O recomendado são 8 GB." }
 
-# Espaco em disco
+# Espaço em disco
 $livreGB = [math]::Round((Get-PSDrive -Name ($env:LOCALAPPDATA.Substring(0,1))).Free / 1GB, 1)
-if ($livreGB -ge 10) { Ok "Espaco livre em disco: $livreGB GB" }
-else { $problemas += "Faltam $([math]::Round(10 - $livreGB, 1)) GB de espaco. A instalacao completa ocupa cerca de 8 GB." }
+if ($livreGB -ge 10) { Ok "Espaço livre em disco: $livreGB GB" }
+else { $problemas += "Faltam $([math]::Round(10 - $livreGB, 1)) GB de espaço. A instalação completa ocupa cerca de 8 GB." }
 
-# Placa de video NVIDIA e VRAM
+# Placa de vídeo NVIDIA e VRAM
 $usarGPU = $false
 $vramGB = 0
 $nvidia = Get-CimInstance Win32_VideoController | Where-Object { $_.Name -match "NVIDIA" } | Select-Object -First 1
@@ -63,27 +70,27 @@ if ($nvidia) {
         if ($saida) {
             $partes = $saida.Split(",")
             $vramGB = [math]::Round([int]$partes[1].Trim() / 1024, 1)
-            Ok "Placa de video: $($partes[0].Trim()), $vramGB GB de VRAM"
+            Ok "Placa de vídeo: $($partes[0].Trim()), $vramGB GB de VRAM"
             $usarGPU = $true
         }
     } catch { }
     if (-not $usarGPU) {
-        Ok "Placa de video: $($nvidia.Name)"
-        $avisos += "Nao consegui ler a VRAM pelo nvidia-smi. Instale o driver mais novo da NVIDIA."
+        Ok "Placa de vídeo: $($nvidia.Name)"
+        $avisos += "Não consegui ler a VRAM pelo nvidia-smi. Instale o driver mais novo da NVIDIA."
         $usarGPU = $true
     }
 } else {
-    $avisos += "Nao encontrei placa NVIDIA. O programa vai rodar na CPU, varias vezes mais lento."
+    $avisos += "Não encontrei placa NVIDIA. O programa vai rodar na CPU, várias vezes mais lento."
 }
 
 if ($usarGPU -and $vramGB -gt 0 -and $vramGB -lt 4) {
-    $avisos += "Sua VRAM e de $vramGB GB. Abaixo de 4 GB o modelo pode nao caber na placa."
+    $avisos += "Sua VRAM é de $vramGB GB. Abaixo de 4 GB o modelo pode não caber na placa."
 }
 
 foreach ($a in $avisos) { Aviso $a }
 if ($problemas.Count) {
     foreach ($p in $problemas) { Erro $p }
-    Write-Host "`nNao da para instalar nesta maquina. Corrija os itens acima e rode de novo.`n"
+    Write-Host "`nNão dá para instalar nesta máquina. Corrija os itens acima e rode de novo.`n"
     Read-Host "Pressione Enter para fechar"
     exit 1
 }
@@ -91,7 +98,7 @@ if ($problemas.Count) {
 $modoCPU = -not $usarGPU
 if ($modoCPU) {
     Write-Host ""
-    Aviso "Sem GPU, a transcricao de 1 minuto de fala pode levar mais de 1 minuto."
+    Aviso "Sem GPU, a transcrição de 1 minuto de fala pode levar mais de 1 minuto."
     $r = Read-Host "  Instalar assim mesmo? (s/N)"
     if ($r -notmatch "^[sS]") { exit 1 }
 }
@@ -99,10 +106,17 @@ if ($modoCPU) {
 # --------------------------------------------------------------- o que baixar
 Titulo "O que vai ser instalado"
 Write-Host "  Pasta            : $DESTINO"
-Write-Host "  Transcricao      : Whisper large-v3-turbo (1,6 GB)"
-Write-Host "  Revisao de texto : Gemma 3 4B + llama.cpp (cerca de 4 GB), opcional"
-Write-Host ""
-$comRevisao = (Read-Host "  Instalar tambem a revisao de texto pelo Alt? (S/n)") -notmatch "^[nN]"
+Write-Host "  Transcrição      : Whisper large-v3-turbo (1,6 GB)"
+if ($modoCPU) {
+    # sem placa NVIDIA o motor de revisão não roda, então nem oferece o download
+    Write-Host "  Revisão de texto : fora, porque depende de placa NVIDIA"
+    Write-Host ""
+    $comRevisao = $false
+} else {
+    Write-Host "  Revisão de texto : Gemma 3 4B + llama.cpp (cerca de 4 GB), opcional"
+    Write-Host ""
+    $comRevisao = (Read-Host "  Instalar também a revisão de texto pelo Alt? (S/n)") -notmatch "^[nN]"
+}
 
 # ------------------------------------------------------------------- programa
 Titulo "Instalando o programa"
@@ -111,11 +125,11 @@ New-Item -ItemType Directory -Force -Path $DESTINO | Out-Null
 $tmp = Join-Path $env:TEMP "whisper-fogo-instalacao"
 New-Item -ItemType Directory -Force -Path $tmp | Out-Null
 
-# Se o instalador foi rodado de dentro do repositorio clonado, usa os arquivos
-# locais. Senao, baixa do GitHub.
+# Se o instalador foi rodado de dentro do repositório clonado, usa os arquivos
+# locais. Senão, baixa do GitHub.
 $origem = Split-Path -Parent $PSScriptRoot
 if (Test-Path (Join-Path $origem "whisper_fogo\voz.py")) {
-    Ok "Usando os arquivos do repositorio clonado"
+    Ok "Usando os arquivos do repositório clonado"
 } else {
     Write-Host "  Baixando o programa..."
     $zip = Join-Path $tmp "repo.zip"
@@ -132,10 +146,14 @@ Titulo "Preparando o Python"
 $uv = (Get-Command uv -ErrorAction SilentlyContinue).Source
 if (-not $uv) {
     Write-Host "  Instalando o uv (gerenciador de Python)..."
-    Invoke-RestMethod $UV_URL | Invoke-Expression
+    # Pelo mesmo motivo do .bat: baixar e executar na mesma linha é assinatura de
+    # dropper. O script do uv vai para o disco e roda de lá.
+    $uvScript = Join-Path $tmp "instalar-uv.ps1"
+    Invoke-WebRequest -Uri $UV_URL -OutFile $uvScript -UseBasicParsing
+    & $uvScript
     $uv = Join-Path $env:USERPROFILE ".local\bin\uv.exe"
 }
-if (-not (Test-Path $uv)) { Erro "Nao consegui instalar o uv."; Read-Host; exit 1 }
+if (-not (Test-Path $uv)) { Erro "Não consegui instalar o uv."; Read-Host; exit 1 }
 Ok "uv pronto"
 
 Push-Location $DESTINO
@@ -148,8 +166,8 @@ $pacotes = @("faster-whisper", "sounddevice", "numpy", "pystray", "pillow", "com
 Ok "Bibliotecas instaladas"
 
 # ------------------------------------------------------------------- modelos
-Titulo "Baixando o modelo de transcricao"
-Write-Host "  large-v3-turbo, 1,6 GB. So acontece uma vez."
+Titulo "Baixando o modelo de transcrição"
+Write-Host "  large-v3-turbo, 1,6 GB. Só acontece uma vez."
 $py = "$DESTINO\.venv\Scripts\python.exe"
 $computeTipo = if ($modoCPU) { "int8" } else { "float16" }
 $dispositivo = if ($modoCPU) { "cpu" } else { "cuda" }
@@ -158,10 +176,10 @@ from faster_whisper import WhisperModel
 WhisperModel('$MODELO', device='$dispositivo', compute_type='$computeTipo')
 print('modelo pronto')
 "@
-Ok "Modelo de transcricao no lugar"
+Ok "Modelo de transcrição no lugar"
 
 if ($comRevisao) {
-    Titulo "Baixando a revisao de texto"
+    Titulo "Baixando a revisão de texto"
     New-Item -ItemType Directory -Force -Path "$DESTINO\modelos", "$DESTINO\llama" | Out-Null
     Write-Host "  Gemma 3 4B, 2,4 GB..."
     & $py -c @"
@@ -171,19 +189,15 @@ p = hf_hub_download('$GEMMA_REPO', '$GEMMA_ARQ')
 shutil.copy(p, r'$DESTINO\modelos\$GEMMA_ARQ')
 print('gemma pronto')
 "@
-    Ok "Modelo de revisao no lugar"
+    Ok "Modelo de revisão no lugar"
 
-    if (-not $modoCPU) {
-        Write-Host "  llama.cpp com CUDA..."
-        foreach ($u in @($LLAMA_URL, $CUDART_URL)) {
-            $z = Join-Path $tmp ([System.IO.Path]::GetFileName($u))
-            Invoke-WebRequest -Uri $u -OutFile $z
-            Expand-Archive -Path $z -DestinationPath "$DESTINO\llama" -Force
-        }
-        Ok "Motor de revisao instalado"
-    } else {
-        Aviso "Sem GPU, a revisao de texto nao foi instalada. O ditado funciona normal."
+    Write-Host "  llama.cpp com CUDA..."
+    foreach ($u in @($LLAMA_URL, $CUDART_URL)) {
+        $z = Join-Path $tmp ([System.IO.Path]::GetFileName($u))
+        Invoke-WebRequest -Uri $u -OutFile $z
+        Expand-Archive -Path $z -DestinationPath "$DESTINO\llama" -Force
     }
+    Ok "Motor de revisão instalado"
 }
 
 # --------------------------------------------------------------- dicionario
@@ -193,43 +207,69 @@ if (-not (Test-Path "$DESTINO\dicionario.json")) {
 
 # ------------------------------------------------------------------- atalhos
 Titulo "Criando os atalhos"
-$ws = New-Object -ComObject WScript.Shell
-foreach ($destinoLnk in @("$env:USERPROFILE\Desktop\Whisper Fogo.lnk",
-                          "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Whisper Fogo.lnk")) {
-    Remove-Item $destinoLnk -Force -ErrorAction SilentlyContinue
-    $l = $ws.CreateShortcut($destinoLnk)
-    $l.TargetPath = "$DESTINO\.venv\Scripts\pythonw.exe"
-    $l.Arguments = "`"$DESTINO\voz.py`""
-    $l.WorkingDirectory = $DESTINO
-    $l.IconLocation = "$DESTINO\fogo.ico,0"
-    $l.Description = "Whisper Fogo: ditado por voz offline"
-    $l.WindowStyle = 7
-    $l.Save()
+
+# Onde fica o Desktop é o Windows que responde. Com o OneDrive ligado, a pasta
+# real é "...\OneDrive\Desktop" e "$env:USERPROFILE\Desktop" não existe.
+function Pasta-Do-Sistema($nome, $reserva) {
+    $p = [Environment]::GetFolderPath($nome)
+    if (-not $p -or -not (Test-Path $p)) { $p = $reserva }
+    return $p
 }
-# conferir relendo do disco: editar .lnk pela metade zera o alvo em silencio
-$conf = $ws.CreateShortcut("$env:USERPROFILE\Desktop\Whisper Fogo.lnk")
-if ($conf.TargetPath -and (Test-Path $conf.TargetPath)) { Ok "Atalho no Desktop e no menu Iniciar" }
-else { Erro "O atalho saiu quebrado. Abra o programa por $DESTINO\.venv\Scripts\pythonw.exe voz.py" }
+$pastaDesktop = Pasta-Do-Sistema 'DesktopDirectory' "$env:USERPROFILE\Desktop"
+$pastaMenu    = Pasta-Do-Sistema 'Programs' "$env:APPDATA\Microsoft\Windows\Start Menu\Programs"
+
+$ws = New-Object -ComObject WScript.Shell
+$feitos = @()
+foreach ($pasta in @($pastaDesktop, $pastaMenu)) {
+    $destinoLnk = Join-Path $pasta "Whisper Fogo.lnk"
+    try {
+        if (-not (Test-Path $pasta)) { New-Item -ItemType Directory -Force -Path $pasta | Out-Null }
+        Remove-Item $destinoLnk -Force -ErrorAction SilentlyContinue
+        $l = $ws.CreateShortcut($destinoLnk)
+        $l.TargetPath = "$DESTINO\.venv\Scripts\pythonw.exe"
+        $l.Arguments = "`"$DESTINO\voz.py`""
+        $l.WorkingDirectory = $DESTINO
+        $l.IconLocation = "$DESTINO\fogo.ico,0"
+        $l.Description = "Whisper Fogo: ditado por voz offline"
+        $l.WindowStyle = 7
+        $l.Save()
+        # conferir relendo do disco: editar .lnk pela metade zera o alvo em silêncio
+        $conf = $ws.CreateShortcut($destinoLnk)
+        if ($conf.TargetPath -and (Test-Path $conf.TargetPath)) { $feitos += $destinoLnk }
+    } catch {
+        # atalho é conveniência: avisa e segue, o programa já está no lugar
+        Aviso "Não consegui criar o atalho em $pasta"
+    }
+}
+if ($feitos.Count -eq 2)    { Ok "Atalho no Desktop e no menu Iniciar" }
+elseif ($feitos.Count -eq 1) { Ok "Atalho criado em $(Split-Path $feitos[0] -Parent)" }
+else {
+    Aviso "Não consegui criar atalho nenhum. Para abrir o programa, rode:"
+    Aviso "$DESTINO\.venv\Scripts\pythonw.exe `"$DESTINO\voz.py`""
+}
 
 # --------------------------------------------------------------------- testes
-Titulo "Conferindo a instalacao"
-foreach ($t in @("corrigir.py", "aprendizado.py", "observador.py")) {
+Titulo "Conferindo a instalação"
+foreach ($t in @("corrigir.py", "aprendizado.py", "observador.py", "tema.py")) {
     $saida = & $py (Join-Path $DESTINO $t) 2>&1 | Select-Object -Last 1
     Write-Host "  $saida"
 }
+# o historico.py abre a janela quando chamado sem argumento, por isso o --teste
+$saida = & $py (Join-Path $DESTINO "historico.py") --teste 2>&1 | Select-Object -Last 1
+Write-Host "  $saida"
 Pop-Location
 Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
 
 # ---------------------------------------------------------------------- fim
 Write-Host @"
 
-  Pronto. O Whisper Fogo esta instalado.
+  Pronto. O Whisper Fogo está instalado.
 
   Como usar:
     Segure Ctrl esquerdo + Shift esquerdo .... fala e solta, o texto cola sozinho
-    Ctrl + Shift + Espaco ................... maos livres, a mesma tecla encerra
+    Ctrl + Shift + Espaço ................... mãos livres, a mesma tecla encerra
     Somar Alt ............................... revisa o texto antes de colar
-    Clique no icone da bandeja .............. abre o historico de ditados
+    Clique no ícone da bandeja .............. abre o histórico de ditados
 
   O primeiro ditado demora alguns segundos a mais, porque carrega o modelo.
 

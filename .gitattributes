@@ -1,0 +1,13 @@
+# Quebra de linha por sistema, cravada aqui para não depender da configuração de
+# quem clona. Script de macOS com CRLF quebra no bash (o \r entra no comando e
+# vira "command not found"), e bloco de várias linhas em .bat com LF puro
+# confunde o cmd do Windows.
+*.sh       text eol=lf
+*.command  text eol=lf
+*.bat      text eol=crlf
+*.ps1      text eol=crlf
+*.py       text eol=lf
+*.md       text eol=lf
+
+*.png      binary
+*.ico      binary
