@@ -9,10 +9,9 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-# O script vai para o disco antes de rodar, e não direto do cano para o bash.
-# No Windows esse encadeamento fazia o antivírus matar o instalador; aqui ele
-# não chega a esse ponto, mas separar também deixa o erro de download visível
-# em vez de virar um bash lendo um cano vazio.
+# O script vai para o disco antes de rodar, e não direto do cano para o bash:
+# assim um download interrompido aparece como erro, em vez de virar um bash
+# lendo um cano vazio.
 if [[ -f "instalar.sh" ]]; then
   bash instalar.sh
 else

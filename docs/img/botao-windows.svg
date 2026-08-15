@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="216" height="28" role="img" aria-label="BAIXAR PARA: WINDOWS">
+<title>BAIXAR PARA: WINDOWS</title>
+<g shape-rendering="crispEdges">
+<rect width="110" height="28" fill="#555"/>
+<rect x="110" width="106" height="28" fill="#0078d6"/>
+</g>
+<g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" font-weight="bold" text-rendering="geometricPrecision" font-size="100">
+<text x="550" y="180" transform="scale(.1)" textLength="919">BAIXAR PARA</text>
+<text x="1726" y="180" transform="scale(.1)" textLength="691">WINDOWS</text>
+</g>
+<path transform="translate(119 7) scale(0.58333)" fill="#fff" d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
+</svg>

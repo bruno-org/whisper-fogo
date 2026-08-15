@@ -146,8 +146,7 @@ Titulo "Preparando o Python"
 $uv = (Get-Command uv -ErrorAction SilentlyContinue).Source
 if (-not $uv) {
     Write-Host "  Instalando o uv (gerenciador de Python)..."
-    # Pelo mesmo motivo do .bat: baixar e executar na mesma linha é assinatura de
-    # dropper. O script do uv vai para o disco e roda de lá.
+    # o script do uv vai para o disco e roda de lá
     $uvScript = Join-Path $tmp "instalar-uv.ps1"
     Invoke-WebRequest -Uri $UV_URL -OutFile $uvScript -UseBasicParsing
     & $uvScript

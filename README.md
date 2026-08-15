@@ -9,7 +9,7 @@ Sem nuvem, sem mensalidade, sem enviar suas informações para servidor nenhum.
 
 <br>
 
-<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat"><img src="https://img.shields.io/badge/Baixar%20para-Windows-0078D6?style=for-the-badge&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZiI%2BPHBhdGggZD0iTTAgMy40NDlMOS43NSAyLjF2OS40NTFIMG0xMC45NDktOS42MDJMMjQgMHYxMS40SDEwLjk0OU0wIDEyLjZoOS43NXY5LjQ1MUwwIDIwLjY5OU0xMC45NDkgMTIuNkgyNFYyNGwtMTIuOS0xLjgwMSIvPjwvc3ZnPgo%3D&logoColor=white" alt="Baixar o instalador para Windows"></a>&nbsp;&nbsp;<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.command"><img src="https://img.shields.io/badge/Baixar%20para-macOS%20(beta)-999999?style=for-the-badge&logo=apple&logoColor=white" alt="Baixar o instalador para macOS"></a>
+<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat"><img src="docs/img/botao-windows.svg" alt="Baixar o instalador para Windows" height="28"></a>&nbsp;&nbsp;<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.command"><img src="docs/img/botao-macos.svg" alt="Baixar o instalador para macOS" height="28"></a>
 
 <br><br>
 
@@ -120,7 +120,7 @@ dele.
 
 <div align="center">
 
-<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat"><img src="https://img.shields.io/badge/⬇%20Baixar%20instalador-Windows-0078D6?style=for-the-badge&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZiI%2BPHBhdGggZD0iTTAgMy40NDlMOS43NSAyLjF2OS40NTFIMG0xMC45NDktOS42MDJMMjQgMHYxMS40SDEwLjk0OU0wIDEyLjZoOS43NXY5LjQ1MUwwIDIwLjY5OU0xMC45NDkgMTIuNkgyNFYyNGwtMTIuOS0xLjgwMSIvPjwvc3ZnPgo%3D&logoColor=white" alt="Baixar o instalador para Windows"></a>&nbsp;&nbsp;<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.command"><img src="https://img.shields.io/badge/⬇%20Baixar%20instalador-macOS%20(beta)-999999?style=for-the-badge&logo=apple&logoColor=white" alt="Baixar o instalador para macOS"></a>
+<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat"><img src="docs/img/botao-windows.svg" alt="Baixar o instalador para Windows" height="28"></a>&nbsp;&nbsp;<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.command"><img src="docs/img/botao-macos.svg" alt="Baixar o instalador para macOS" height="28"></a>
 
 </div>
 

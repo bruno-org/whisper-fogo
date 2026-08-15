@@ -9,10 +9,8 @@ chcp 65001 > nul
 
 title Instalar o Whisper Fogo
 
-REM O script vai para o disco antes de rodar. Baixar e executar na mesma linha
-REM é assinatura de dropper para o antivírus, que encerra o processo.
-
 REM Se o arquivo está dentro do repositório clonado, usa o script local.
+REM Quando vem de fora, o script é gravado em disco e executado de lá.
 set "INSTALADOR=%~dp0instalar.ps1"
 if not exist "%INSTALADOR%" (
     echo Baixando o instalador...
