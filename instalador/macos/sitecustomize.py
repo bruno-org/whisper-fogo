@@ -25,4 +25,9 @@ if (os.path.basename(sys.executable) == "whisper-fogo"
     with open(voz, encoding="utf-8") as arquivo:
         codigo = compile(arquivo.read(), voz, "exec")
     exec(codigo, {"__name__": "__main__", "__file__": voz})
-    raise SystemExit(0)
+    # Encerra aqui mesmo. Este módulo é carregado durante a preparação do
+    # Python, e devolver o controle a essa etapa depois do programa ter rodado
+    # deixaria o interpretador continuar de onde parou, sem ter o que fazer.
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(0)

@@ -247,6 +247,38 @@ echo "  Preparando os módulos..."
 "$PYTHON" -m compileall -q "$RECURSOS/python/lib" "$VENV/lib" "$DESTINO" >/dev/null 2>&1 || true
 codesign --force --deep --sign - "$APP" >/dev/null 2>&1   && ok "Aplicativo assinado"   || aviso "Não consegui assinar o aplicativo. Ele funciona, e o pedido de permissão é que fica com o nome do arquivo."
 
+# ------------------------------------------------------------------ na conta
+titulo "Deixando o Whisper Fogo pronto"
+
+# Abre junto com o Mac, como qualquer programa que vive na barra de menus.
+mkdir -p "$HOME/Library/LaunchAgents"
+AGENTE="$HOME/Library/LaunchAgents/ai.whisperfogo.app.plist"
+cat > "$AGENTE" <<AGENT
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>ai.whisperfogo.app</string>
+  <key>ProgramArguments</key>
+  <array><string>$APP/Contents/MacOS/whisper-fogo</string></array>
+  <key>RunAtLoad</key><true/>
+  <key>ProcessType</key><string>Interactive</string>
+</dict>
+</plist>
+AGENT
+ok "Abre junto com o Mac"
+
+# Ícone fixo no Dock, para achar o programa junto com os outros.
+if ! defaults read com.apple.dock persistent-apps 2>/dev/null | grep -q "Whisper Fogo.app"; then
+  defaults write com.apple.dock persistent-apps -array-add \
+    "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>$APP</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>" \
+    2>/dev/null && killall Dock 2>/dev/null
+fi
+ok "Ícone no Dock"
+
+# Sobe agora, para o ícone já aparecer na barra de menus.
+open "$APP" 2>/dev/null && ok "Whisper Fogo aberto"
+
 cat <<'FIM'
 
   Pronto. Antes do primeiro uso, o macOS vai exigir duas permissões:
