@@ -272,16 +272,20 @@ python clip.py          #  3 asserts: área de transferência com acento
 
 | Recurso | Windows | macOS |
 |---|---|---|
+| Instalação de ponta a ponta | testado | testado em Apple Silicon |
+| Transcrição | testado | testada, roda na CPU |
+| Revisão de texto pelo `Alt` | testado | testada, com Metal |
+| Suítes de teste | testado | testadas |
 | Ditado com atalho global | testado | escrito, **não testado** |
 | Colagem no cursor | testado | escrito, **não testado** |
 | Histórico e cópia | testado | deve funcionar (Tk) |
-| Revisão de texto pelo `Alt` | testado | exige `brew install llama.cpp` |
 | Aprender pela sua correção | testado | **ainda não**, depende da API de acessibilidade da Apple |
 | Ícone na bandeja | testado | deve funcionar |
 
-**O Whisper Fogo foi construído e testado no Windows.** O caminho do macOS
-existe, foi escrito com as APIs corretas e está no código, mas ainda está sendo
-testado adequadamente agora, e por isso continua em fase beta.
+**O Whisper Fogo nasceu no Windows.** No macOS, a instalação, a transcrição, a
+revisão de texto e as suítes de teste rodam em Apple Silicon. O ditado por
+atalho global depende das duas permissões do sistema, e é a parte que continua
+em fase beta.
 
 No macOS o sistema vai pedir duas permissões na primeira execução, em Ajustes,
 Privacidade e Segurança: **Microfone** e **Acessibilidade**. Sem a segunda, o
