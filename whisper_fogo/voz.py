@@ -132,18 +132,13 @@ def _icone(estado):
         # ponytail: sem a arte, o app continua de pé com o círculo de antes.
         base = Image.new("RGBA", (L, L), (0, 0, 0, 0))
         ImageDraw.Draw(base).ellipse([8, 8, L - 8, L - 8], fill=(200, 80, 60, 255))
-    if estado == "ocioso":                       # brasa apagada: modelo fora da GPU
-        if MAC:
-            # Na barra de menus do macOS a chama vai como silhueta cheia, no
-            # mesmo tom dos ícones que o sistema desenha ao lado. A silhueta
-            # também é marcada como imagem de sistema assim que entra na barra,
-            # e a partir daí quem escolhe o tom é o macOS, conforme o fundo.
-            silhueta = Image.new("RGBA", base.size, (0, 0, 0, 255))
-            silhueta.putalpha(base.getchannel("A"))
-            base = silhueta
-        else:
-            base = ImageEnhance.Color(base).enhance(0.0)
-            base.putalpha(base.getchannel("A").point(lambda a: int(a * 0.55)))
+    if estado == "ocioso" and not MAC:           # brasa apagada: modelo fora da GPU
+        # A barra de menus do macOS é translúcida e muda de tom conforme o fundo
+        # de tela, e todo ícone do sistema ali é preto ou branco. A chama vai
+        # com a cor da marca, que é o que se enxerga nos dois casos e o que
+        # distingue o Whisper Fogo do resto da fileira.
+        base = ImageEnhance.Color(base).enhance(0.0)
+        base.putalpha(base.getchannel("A").point(lambda a: int(a * 0.55)))
     if (cor := CORES.get(estado)):
         d = ImageDraw.Draw(base)
         r = L // 4
@@ -195,18 +190,15 @@ class WhisperFogo:
             self.tray.icon = _icone(nome)
             self.tray.title = f"Whisper Fogo ({nome})"
             if MAC:
-                # A marcação vale para a imagem que já está na barra, e a troca
-                # acima acontece na fila do sistema. O adiamento curto garante
-                # que quem recebe a marca é a imagem nova, e não a anterior.
-                threading.Timer(0.3, self._marcar_silhueta, [nome]).start()
+                threading.Timer(0.3, self._manter_cor).start()
 
-    def _marcar_silhueta(self, estado):
-        """Diz ao macOS que a chama em repouso é um desenho de sistema, para ele
-        escolher o tom conforme o fundo da barra. Nos estados com cor a imagem
-        vai como está, senão a cor não chegaria à tela.
+    def _manter_cor(self):
+        """Impede o macOS de repintar a chama de preto ou branco.
 
-        A imagem só existe depois que a barra a recebe, então a marca é tentada
-        por alguns segundos em vez de uma vez só.
+        Todo ícone da barra de menus é tratado como desenho de sistema por
+        padrão, e o sistema o pinta conforme o fundo. Aqui a cor é a da marca, e
+        é ela que precisa chegar à tela. A imagem só existe depois que a barra a
+        recebe, então a marca é tentada por alguns segundos em vez de uma vez.
         """
         for _ in range(20):
             imagem = getattr(self.tray, "_icon_image", None)
@@ -214,7 +206,7 @@ class WhisperFogo:
                 imagem = self.tray._status_item.button().image()
             if imagem is not None:
                 try:
-                    imagem.setTemplate_(estado == "ocioso")
+                    imagem.setTemplate_(False)
                 except Exception:
                     pass
                 return
