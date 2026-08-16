@@ -57,6 +57,57 @@ def aplicar(janela):
         pass
 
 
+def barra_de_titulo(raiz, titulo):
+    """Barra de título na cor da marca, desenhada pelo programa.
+
+    A barra que o macOS desenha tem cor fixa e não acompanha o tema da janela,
+    então no macOS ela é substituída por esta, com os mesmos controles no mesmo
+    lugar: fechar e minimizar à esquerda, arrastar pela faixa.
+    """
+    if not MAC:
+        return None
+
+    raiz.overrideredirect(True)
+    barra = tk.Frame(raiz, bg=VERDE, height=28)
+    barra.pack(side="top", fill="x")
+    barra.pack_propagate(False)
+
+    controles = tk.Frame(barra, bg=VERDE)
+    controles.pack(side="left", padx=(10, 0))
+
+    def botao_redondo(cor, acao):
+        alvo = tk.Canvas(controles, width=14, height=14, bg=VERDE,
+                         highlightthickness=0, cursor="hand2")
+        alvo.create_oval(2, 2, 12, 12, fill=cor, outline="")
+        alvo.pack(side="left", padx=3)
+        alvo.bind("<Button-1>", lambda _: acao())
+        return alvo
+
+    botao_redondo("#ff5f57", raiz.destroy)
+    botao_redondo("#febc2e", lambda: raiz.wm_iconify())
+
+    tk.Label(barra, text=titulo, bg=VERDE, fg=BRANCO,
+             font=("Helvetica", 12)).pack(side="left", expand=True)
+
+    # arrastar a janela pela faixa, que é o que a barra do sistema faria
+    posicao = {}
+
+    def pegar(evento):
+        posicao["x"], posicao["y"] = evento.x_root, evento.y_root
+        posicao["jx"], posicao["jy"] = raiz.winfo_x(), raiz.winfo_y()
+
+    def mover(evento):
+        if not posicao:
+            return
+        raiz.geometry(f"+{posicao['jx'] + evento.x_root - posicao['x']}"
+                      f"+{posicao['jy'] + evento.y_root - posicao['y']}")
+
+    for alvo in (barra, barra.winfo_children()[-1]):
+        alvo.bind("<Button-1>", pegar)
+        alvo.bind("<B1-Motion>", mover)
+    return barra
+
+
 def botao(pai, texto, comando, fonte):
     """Botão na cor da marca, com o mesmo desenho nos dois sistemas.
 

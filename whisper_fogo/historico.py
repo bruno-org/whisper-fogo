@@ -102,6 +102,7 @@ def main():
         except tk.TclError:
             pass
     tema.aplicar(raiz)                        # fundo e barra de título na cor da marca
+    tema.barra_de_titulo(raiz, "Whisper Fogo: histórico de ditados")
 
     corpo = tkfont.Font(family="Segoe UI", size=11)
     miudo = tkfont.Font(family="Segoe UI", size=9)
