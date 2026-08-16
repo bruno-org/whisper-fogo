@@ -132,11 +132,13 @@ def _icone(estado):
         # ponytail: sem a arte, o app continua de pé com o círculo de antes.
         base = Image.new("RGBA", (L, L), (0, 0, 0, 0))
         ImageDraw.Draw(base).ellipse([8, 8, L - 8, L - 8], fill=(200, 80, 60, 255))
-    if estado == "ocioso" and not MAC:           # brasa apagada: modelo fora da GPU
-        # A barra de menus do macOS é translúcida e muda de tom conforme o fundo
-        # de tela, e todo ícone do sistema ali é preto ou branco. A chama vai
-        # com a cor da marca, que é o que se enxerga nos dois casos e o que
-        # distingue o Whisper Fogo do resto da fileira.
+    if MAC:
+        # Na barra de menus do macOS a chama vai branca, no mesmo tom dos ícones
+        # que o sistema desenha ao lado.
+        silhueta = Image.new("RGBA", base.size, (255, 255, 255, 255))
+        silhueta.putalpha(base.getchannel("A"))
+        base = silhueta
+    elif estado == "ocioso":                     # brasa apagada: modelo fora da GPU
         base = ImageEnhance.Color(base).enhance(0.0)
         base.putalpha(base.getchannel("A").point(lambda a: int(a * 0.55)))
     if (cor := CORES.get(estado)):
