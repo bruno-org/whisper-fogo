@@ -9,6 +9,11 @@
 
 set -euo pipefail
 
+# Cada janela do macOS monta o PATH de um jeito, e o Homebrew muda de lugar entre
+# Apple Silicon e Intel. Os três caminhos onde as ferramentas costumam morar
+# entram desde já, para que o que já está na máquina seja reaproveitado.
+export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
+
 DESTINO="$HOME/Library/Application Support/WhisperFogo"
 REPO_ZIP="https://github.com/bruno-org/whisper-fogo/archive/refs/heads/main.zip"
 MODELO="large-v3-turbo"
