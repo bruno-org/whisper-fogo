@@ -15,7 +15,8 @@ import time
 from pathlib import Path
 
 BASE = Path(__file__).parent
-ARQUIVO = BASE / "historico.jsonl"
+from caminhos import CODIGO, DADOS
+ARQUIVO = DADOS / "historico.jsonl"
 LIMITE = 500          # quantos ditados a janela mostra, do mais novo para o mais velho
 PREVIA = 160          # teto grosseiro da prévia: quem corta de verdade é a medida em pixel
 RESPIRO = 12          # px que o título nunca invade, para não encostar na barra de rolagem
@@ -92,7 +93,7 @@ def main():
     raiz.title("Whisper Fogo: histórico de ditados")
     raiz.geometry("980x600")
     raiz.minsize(720, 420)
-    icone = BASE / "fogo.ico"
+    icone = CODIGO / "fogo.ico"
     if icone.exists():
         raiz.iconbitmap(default=str(icone))   # default: vale para a janela e a barra
     tema.aplicar(raiz)                        # fundo e barra de título na cor da marca

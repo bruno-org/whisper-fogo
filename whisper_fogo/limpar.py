@@ -13,9 +13,10 @@ import urllib.request
 from pathlib import Path
 
 BASE = Path(__file__).parent
+from caminhos import DADOS
 MAC = sys.platform == "darwin"
-EXE = BASE / "llama" / ("llama-server" if MAC else "llama-server.exe")
-MODELO = BASE / "modelos" / "gemma-3-4b-it-Q4_K_M.gguf"
+EXE = DADOS / "llama" / ("llama-server" if MAC else "llama-server.exe")
+MODELO = DADOS / "modelos" / "gemma-3-4b-it-Q4_K_M.gguf"
 PORTA = 8082
 URL = f"http://127.0.0.1:{PORTA}/v1/chat/completions"
 

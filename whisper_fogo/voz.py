@@ -28,10 +28,11 @@ if not MAC:
     import winsound
 
 BASE = Path(__file__).parent
+from caminhos import DADOS
 
 # Interpretador que abre as janelas auxiliares em processo próprio: no Windows a
-# variante sem console, no macOS o Python do ambiente isolado.
-PYTHON_JANELA = BASE / ".venv" / ("bin/python" if MAC else "Scripts/pythonw.exe")
+# variante sem console, no macOS o mesmo que já está executando este programa.
+PYTHON_JANELA = Path(sys.executable) if MAC else BASE / ".venv" / "Scripts" / "pythonw.exe"
 
 
 def beep(frequencia, ms):
@@ -52,7 +53,7 @@ def ligar_log():
     importar o módulo perde a própria saída."""
     if sys.stderr is None or not sys.stderr.isatty():
         try:
-            log = open(BASE / "voz.log", "a", encoding="utf-8", buffering=1)
+            log = open(DADOS / "voz.log", "a", encoding="utf-8", buffering=1)
             sys.stderr = sys.stdout = log
             print(f"\n=== Whisper Fogo iniciado {time.strftime('%d/%m/%Y %H:%M')} ===")
         except Exception:
@@ -95,7 +96,7 @@ def hotwords():
     """
     import json
     try:
-        d = json.loads((BASE / "dicionario.json").read_text(encoding="utf-8"))
+        d = json.loads((DADOS / "dicionario.json").read_text(encoding="utf-8"))
         minhas = d.get("hotwords") or []
     except Exception:
         minhas = []
@@ -132,11 +133,16 @@ def _icone(estado):
         base = Image.new("RGBA", (L, L), (0, 0, 0, 0))
         ImageDraw.Draw(base).ellipse([8, 8, L - 8, L - 8], fill=(200, 80, 60, 255))
     if estado == "ocioso":                       # brasa apagada: modelo fora da GPU
-        base = ImageEnhance.Color(base).enhance(0.0)
-        if not MAC:
-            # a bandeja do Windows fica sobre a barra escura, onde a chama cinza
-            # translúcida ainda se lê. A barra do macOS acompanha o tema e fica
-            # clara na maior parte do dia, então lá a brasa apagada vai opaca.
+        if MAC:
+            # A barra de menus do macOS é translúcida e muda de claro para
+            # escuro conforme o fundo. Quem resolve isso é o próprio sistema,
+            # desde que receba a silhueta: ele pinta de branco sobre barra
+            # escura e de preto sobre barra clara, como faz com os ícones dele.
+            silhueta = Image.new("RGBA", base.size, (0, 0, 0, 255))
+            silhueta.putalpha(base.getchannel("A"))
+            base = silhueta
+        else:
+            base = ImageEnhance.Color(base).enhance(0.0)
             base.putalpha(base.getchannel("A").point(lambda a: int(a * 0.55)))
     if (cor := CORES.get(estado)):
         d = ImageDraw.Draw(base)
@@ -188,6 +194,14 @@ class WhisperFogo:
         if self.tray:
             self.tray.icon = _icone(nome)
             self.tray.title = f"Whisper Fogo ({nome})"
+            if MAC:
+                # avisa o macOS de que a silhueta é dele para pintar; nos estados
+                # com cor a imagem vai como está, para a cor chegar à tela
+                try:
+                    imagem = self.tray._status_item.button().image()
+                    imagem.setTemplate_(nome == "ocioso")
+                except Exception:
+                    pass
 
     # ---------- modelo ----------
     def carregar(self):
@@ -376,7 +390,7 @@ class WhisperFogo:
             print(f"[aprendizado falhou] {e}", file=sys.stderr)
 
     def _salvar_audio(self, audio):
-        caminho = BASE / f"falha-{time.strftime('%Y%m%d-%H%M%S')}.wav"
+        caminho = DADOS / f"falha-{time.strftime('%Y%m%d-%H%M%S')}.wav"
         with wave.open(str(caminho), "wb") as w:
             w.setnchannels(1)
             w.setsampwidth(2)
@@ -409,7 +423,7 @@ def instancia_unica():
         return kernel32.GetLastError() != 183  # ERROR_ALREADY_EXISTS
     # macOS: arquivo de trava com o PID dentro. Se o processo antigo morreu sem
     # limpar, o arquivo fica órfão e a checagem de PID libera a vez.
-    trava = BASE / "instancia.lock"
+    trava = DADOS / "instancia.lock"
     try:
         antigo = int(trava.read_text())
         os.kill(antigo, 0)          # não mata, só pergunta se está vivo
@@ -452,7 +466,8 @@ def main():
     )
     app.tray = pystray.Icon("Whisper Fogo", _icone("ocioso"),
                             "Whisper Fogo (ocioso)", menu)
-    app.tray.run()
+    # o ajuste da silhueta precisa do ícone já montado, e é isso que o setup dá
+    app.tray.run(setup=lambda ic: app.estado("ocioso"))
 
 
 if __name__ == "__main__":

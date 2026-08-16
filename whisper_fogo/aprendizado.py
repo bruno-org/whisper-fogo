@@ -22,8 +22,9 @@ import unicodedata
 from pathlib import Path
 
 BASE = Path(__file__).parent
-ARQUIVO = BASE / "aprendido.json"
-STOPWORDS = BASE / "stopwords_pt.txt"
+from caminhos import CODIGO, DADOS
+ARQUIVO = DADOS / "aprendido.json"
+STOPWORDS = CODIGO / "stopwords_pt.txt"
 
 # Palavra comum só vira regra na repetição, nome
 # próprio e sigla entram de primeira.

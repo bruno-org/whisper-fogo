@@ -15,16 +15,18 @@ set -euo pipefail
 # entram desde já, para que o que já está na máquina seja reaproveitado.
 export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
 
-# Tudo mora dentro do próprio aplicativo: o interpretador, as bibliotecas, o
-# código e os modelos. É o que faz o macOS identificar um programa só, com o
-# nome e o ícone do Whisper Fogo, na hora de pedir microfone e acessibilidade.
-# Também é o que faz o descarte funcionar como no resto do macOS: arrastar o
-# aplicativo para o Lixo leva tudo junto.
+# O interpretador, as bibliotecas e o código moram dentro do próprio aplicativo.
+# É o que faz o macOS identificar um programa só, com o nome e o ícone do
+# Whisper Fogo, na hora de pedir microfone e acessibilidade.
 APP="$HOME/Applications/Whisper Fogo.app"
 RECURSOS="$APP/Contents/Resources"
 DESTINO="$RECURSOS/app"
 VENV="$RECURSOS/venv"
 PYTHON="$VENV/bin/python"
+# O aplicativo é assinado, e aplicativo assinado não muda depois de instalado.
+# O que nasce durante o uso, como o histórico e os modelos, mora na pasta de
+# dados que o macOS reserva para cada programa.
+DADOS="$HOME/Library/Application Support/WhisperFogo"
 REPO_ZIP="https://github.com/bruno-org/whisper-fogo/archive/refs/heads/main.zip"
 MODELO="large-v3-turbo"
 GEMMA_REPO="unsloth/gemma-3-4b-it-GGUF"
@@ -86,7 +88,7 @@ ok "Conexão com a internet"
 
 # ------------------------------------------------------------------- programa
 titulo "Instalando o programa"
-mkdir -p "$DESTINO" "$APP/Contents/MacOS" "$RECURSOS"
+mkdir -p "$DESTINO" "$APP/Contents/MacOS" "$RECURSOS" "$DADOS"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
@@ -126,12 +128,6 @@ cp -R "$raiz_python" "$RECURSOS/python"
 ok "Python embarcado no aplicativo ($(du -sh "$RECURSOS/python" | cut -f1))"
 
 uv venv --python "$RECURSOS/python/bin/python3.12" "$VENV" >/dev/null
-
-# O macOS mostra o nome do arquivo do interpretador quando pede microfone e
-# acessibilidade, então o arquivo leva o nome do programa. É o que faz a lista
-# de Ajustes ter uma linha só, escrita "Whisper Fogo".
-cp "$("$PYTHON" -c 'import os, sys; print(os.path.realpath(sys.executable))')" \
-   "$VENV/bin/Whisper Fogo"
 ok "Ambiente Python isolado criado"
 
 echo "  Instalando as bibliotecas (pode levar alguns minutos)..."
@@ -153,12 +149,12 @@ printf "\n  Instalar também a revisão de texto pelo Alt? (S/n) "
 read -r resposta || resposta="n"
 if [[ ! "$resposta" =~ ^[nN] ]]; then
   titulo "Baixando a revisão de texto"
-  mkdir -p "$DESTINO/modelos"
+  mkdir -p "$DADOS/modelos"
   "$PYTHON" - <<PY
 from huggingface_hub import hf_hub_download
 import shutil
 p = hf_hub_download("$GEMMA_REPO", "$GEMMA_ARQ")
-shutil.copy(p, "$DESTINO/modelos/$GEMMA_ARQ")
+shutil.copy(p, "$DADOS/modelos/$GEMMA_ARQ")
 print("gemma pronto")
 PY
   ok "Modelo de revisão no lugar"
@@ -184,28 +180,36 @@ except Exception:
 PY
 )"
   if [[ -n "$url_motor" ]] && curl -fsSL -o "$tmp/motor.tar.gz" "$url_motor"; then
-    mkdir -p "$DESTINO/llama"
-    tar -xzf "$tmp/motor.tar.gz" -C "$DESTINO/llama" --strip-components=1
-    chmod +x "$DESTINO/llama/llama-server"
+    mkdir -p "$DADOS/llama"
+    tar -xzf "$tmp/motor.tar.gz" -C "$DADOS/llama" --strip-components=1
+    chmod +x "$DADOS/llama/llama-server"
     ok "Motor de revisão instalado"
   else
-    aviso "Não consegui baixar o motor de revisão. O ditado funciona; a revisão pelo Alt fica de fora."
+    aviso "Não consegui baixar o motor de revisão. O ditado funciona; a revisão fica de fora."
   fi
 fi
 
 # --------------------------------------------------------------- dicionario
-[[ -f "$DESTINO/dicionario.json" ]] || cp "$origem/whisper_fogo/dicionario.exemplo.json" "$DESTINO/dicionario.json" 2>/dev/null || true
+[[ -f "$DADOS/dicionario.json" ]] || cp "$origem/whisper_fogo/dicionario.exemplo.json" "$DADOS/dicionario.json" 2>/dev/null || true
 
 # ----------------------------------------------------------------- aplicativo
 titulo "Finalizando o aplicativo"
-# Caminhos relativos ao próprio pacote: o aplicativo continua inteiro se for
-# movido de lugar, e o interpretador que ele executa é o de dentro.
-cat > "$APP/Contents/MacOS/whisper-fogo" <<'LANCADOR'
-#!/bin/bash
-AQUI="$(cd "$(dirname "$0")/.." && pwd)"
-exec "$AQUI/Resources/venv/bin/Whisper Fogo" "$AQUI/Resources/app/voz.py"
-LANCADOR
+# O executável do pacote é o próprio interpretador. É assim que o macOS trata
+# tudo como um programa só: a lista de Ajustes mostra uma linha, com o nome e o
+# ícone do Whisper Fogo, em vez do interpretador que roda por baixo.
+cp "$RECURSOS/python/bin/python3.12" "$APP/Contents/MacOS/whisper-fogo"
 chmod +x "$APP/Contents/MacOS/whisper-fogo"
+
+# O interpretador do pacote enxerga as bibliotecas por estas duas peças, e o
+# ponto de entrada abre o programa quando o Finder lança o aplicativo.
+cat > "$APP/Contents/pyvenv.cfg" <<CFG
+home = $RECURSOS/python/bin
+include-system-site-packages = false
+version = $("$PYTHON" -c 'import platform; print(platform.python_version())')
+CFG
+ln -sfn "$RECURSOS/venv/lib" "$APP/Contents/lib"
+cp "$origem/instalador/macos/sitecustomize.py" \
+   "$VENV/lib/python3.12/site-packages/sitecustomize.py"
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -218,18 +222,26 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>NSMicrophoneUsageDescription</key><string>O Whisper Fogo grava a sua voz para transcrever, sempre na sua máquina.</string>
 </dict></plist>
 PLIST
-cp "$DESTINO/fogo.icns" "$APP/Contents/Resources/fogo.icns" 2>/dev/null || true
+cp "$DESTINO/fogo.icns" "$RECURSOS/fogo.icns" 2>/dev/null || true
 ok "Aplicativo criado em ~/Applications"
 
 # --------------------------------------------------------------------- testes
 titulo "Conferindo a instalação"
 # A conferência é informativa: o programa já está instalado neste ponto, e o
 # resultado de cada suíte aparece na tela sem interromper o restante.
+export PYTHONDONTWRITEBYTECODE=1
 for t in corrigir.py aprendizado.py tema.py; do
   "$PYTHON" "$DESTINO/$t" 2>&1 | tail -1 || true
 done
 # o historico.py abre a janela quando chamado sem argumento, por isso o --teste
 "$PYTHON" "$DESTINO/historico.py" --teste 2>&1 | tail -1 || true
+
+# A assinatura local dá identidade ao pacote, e é por ela que o macOS mostra o
+# nome e o ícone do Whisper Fogo ao pedir microfone e acessibilidade, em vez do
+# caminho de um arquivo solto. O codesign vem no macOS de fábrica, e a
+# assinatura é a última etapa porque vale a partir do que está no pacote agora.
+find "$APP" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+codesign --force --deep --sign - "$APP" >/dev/null 2>&1   && ok "Aplicativo assinado"   || aviso "Não consegui assinar o aplicativo. Ele funciona, e o pedido de permissão é que fica com o nome do arquivo."
 
 cat <<'FIM'
 

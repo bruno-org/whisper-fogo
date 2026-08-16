@@ -18,7 +18,8 @@ import re
 from pathlib import Path
 
 BASE = Path(__file__).parent
-DICIONARIO = BASE / "dicionario.json"
+from caminhos import DADOS
+DICIONARIO = DADOS / "dicionario.json"
 
 # Reduções da fala corrente do português brasileiro. Não é correção de erro do
 # reconhecedor, é escolha de estilo: quem dita mensagem de WhatsApp quer "pra",
