@@ -69,7 +69,7 @@ terminal, formulário no navegador. Se o programa aceita texto, ele aceita a sua
 <sub>O asterisco à esquerda da data marca o ditado que passou pela revisão de texto, a que você aciona somando <code>Alt</code> enquanto fala, ou <code>Control</code> no Mac.</sub>
 </div>
 
-<br><br>
+<br>
 
 Toda transcrição é salva **antes** de ir para a área de transferência. Se você
 ditou e não tinha campo de texto em foco, a colagem cai no vazio, mas o texto
@@ -86,7 +86,7 @@ de evaporar. O que você falou é seu.
 <img src="docs/img/aviso.png" alt="Aviso de palavra aprendida">
 </div>
 
-<br><br>
+<br>
 
 Ditou, o texto colou, e você corrigiu uma palavra ali mesmo no campo? O Whisper
 Fogo percebe, aprende a grafia certa e passa a acertar sempre. Aparece um aviso
