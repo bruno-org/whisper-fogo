@@ -129,10 +129,20 @@ assinado digitalmente. Clique em "Mais informações" e depois em "Executar assi
 mesmo".
 
 No macOS, o download é um arquivo compactado. Dê dois cliques nele para sair o
-aplicativo **Instalar Whisper Fogo** e dois cliques no aplicativo. Na primeira
-vez o sistema mostra um aviso: feche o aviso, abra **Ajustes do Sistema >
-Privacidade e Segurança**, role até o fim e clique em **Abrir Mesmo Assim**.
-Acontece uma vez só.
+aplicativo **Instalar Whisper Fogo**.
+
+Ao abrir o aplicativo pela primeira vez, o macOS mostra **"o item não foi
+aberto"**. Isso acontece com todo programa que não paga a conta de desenvolvedor
+da Apple, e o caminho para liberar tem três passos:
+
+1. Feche o aviso no botão **Concluído** (não clique em Mover para o Lixo).
+2. Abra **Ajustes do Sistema > Privacidade e Segurança** e role até o fim, na
+   seção **Segurança**. Vai ter uma linha citando o Instalar Whisper Fogo, com o
+   botão **Abrir Mesmo Assim**. Clique nele e autorize.
+3. Dê dois cliques no aplicativo de novo. Agora ele abre.
+
+Acontece uma vez só, por máquina. Se a linha não aparecer em Ajustes, abra o
+aplicativo mais uma vez para o aviso reaparecer, e ela volta.
 
 Ao terminar, o Whisper Fogo abre sozinho, fica na barra de menus, ganha um ícone
 no Dock e passa a abrir junto com o Mac. Na primeira gravação o sistema pede
