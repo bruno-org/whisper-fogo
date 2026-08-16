@@ -10,11 +10,12 @@ da tecla. Por isso é hook de baixo nível no Windows e listener global no macOS
             -> apertou Espaço no meio .................. vira mãos livres
     TRAVADO -> Ctrl+Shift de novo (com ou sem Espaço) .. encerra e cola
 
-🔴 O caminho do macOS foi escrito sem uma máquina Apple para testar, e depende de
-o usuário liberar Acessibilidade em Ajustes. Ver a seção do README.
+No macOS a leitura do teclado depende da permissão de Acessibilidade, e o
+listener só nasce depois que ela está valendo. Ver a seção do README.
 """
 import sys
 import threading
+import time
 
 MAC = sys.platform == "darwin"
 
@@ -150,6 +151,31 @@ if not MAC:
 
 else:
     # --------------------------------------------------------------- macOS
+    def esperar_confianca(intervalo=2.0):
+        """Só devolve o controle quando o macOS liberar a leitura do teclado.
+
+        Ler tecla fora da própria janela depende da permissão de Acessibilidade,
+        e o sistema responde conforme o estado do momento: marcar a caixa em
+        Ajustes muda a resposta na hora, sem precisar abrir o programa de novo.
+        A primeira consulta pede a permissão pela janela do próprio macOS, que
+        já leva ao painel certo.
+        """
+        try:
+            from ApplicationServices import (AXIsProcessTrusted,
+                                             AXIsProcessTrustedWithOptions,
+                                             kAXTrustedCheckOptionPrompt)
+        except ImportError:
+            return
+
+        if AXIsProcessTrustedWithOptions({kAXTrustedCheckOptionPrompt: True}):
+            return
+
+        print("[o atalho global espera a permissão de Acessibilidade em Ajustes "
+              "do Sistema, Privacidade e Segurança]", file=sys.stderr)
+        while not AXIsProcessTrusted():
+            time.sleep(intervalo)
+        print("[permissão de Acessibilidade concedida, atalho no ar]", file=sys.stderr)
+
     class Teclado:
         """Mesma máquina de estados, ouvindo pelo pynput.
 
@@ -221,5 +247,7 @@ else:
             except ImportError:
                 print("[erro] falta o pynput: uv pip install pynput", file=sys.stderr)
                 return
+            # o listener nasce depois da liberação, senão ele sobe surdo
+            esperar_confianca()
             with keyboard.Listener(on_press=self._descer, on_release=self._subir) as ouvinte:
                 ouvinte.join()
