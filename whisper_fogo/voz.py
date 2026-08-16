@@ -483,8 +483,13 @@ def main():
     )
     app.tray = pystray.Icon("Whisper Fogo", _icone("ocioso"),
                             "Whisper Fogo (ocioso)", menu)
-    # o ajuste da silhueta precisa do ícone já montado, e é isso que o setup dá
-    app.tray.run(setup=lambda ic: app.estado("ocioso"))
+    def preparar(icone):
+        # o ícone entra na barra a partir daqui, e é o que faz o desenho ser
+        # instalado no lugar dele; o ajuste do tom vem logo depois
+        icone.visible = True
+        app.estado("ocioso")
+
+    app.tray.run(setup=preparar)
 
 
 if __name__ == "__main__":
