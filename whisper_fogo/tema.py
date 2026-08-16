@@ -10,7 +10,10 @@ A referência visual é a barra de rolagem fina de site: trilho na cor do painel
 polegar arredondado e um respiro entre os dois, que em CSS sai de um
 `border: 2px solid` na cor do trilho.
 """
+import sys
 import tkinter as tk
+
+MAC = sys.platform == "darwin"
 
 VERDE = "#3d6b46"          # o mesmo do botão "Copiar transcrição"
 VERDE_CLARO = "#4d8759"    # o mesmo do hover daquele botão
@@ -52,6 +55,25 @@ def aplicar(janela):
         pintar_titulo(janela)
     except Exception:
         pass
+
+
+def botao(pai, texto, comando, fonte):
+    """Botão na cor da marca, com o mesmo desenho nos dois sistemas.
+
+    O botão do Tk no macOS é desenhado pelo próprio sistema e não aceita cor de
+    fundo, então lá ele é montado sobre um rótulo, que aceita a cor e responde
+    a clique e à passagem do mouse do mesmo jeito.
+    """
+    comum = dict(text=texto, font=fonte, bg=VERDE, fg=BRANCO,
+                 padx=16, pady=6, cursor="hand2", relief="flat", borderwidth=0)
+    if not MAC:
+        return tk.Button(pai, activebackground=VERDE_CLARO, activeforeground=BRANCO,
+                         command=comando, **comum)
+    alvo = tk.Label(pai, **comum)
+    alvo.bind("<Button-1>", lambda _: comando())
+    alvo.bind("<Enter>", lambda _: alvo.config(bg=VERDE_CLARO))
+    alvo.bind("<Leave>", lambda _: alvo.config(bg=VERDE))
+    return alvo
 
 
 class BarraDeRolagem(tk.Canvas):

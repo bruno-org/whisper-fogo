@@ -140,11 +140,7 @@ def main():
     cabecalho.pack(fill="x", pady=(0, 6))
     carimbo = tk.Label(cabecalho, text="", bg=tema.FUNDO, fg=tema.APAGADO, font=miudo)
     carimbo.pack(side="left")
-    copiar_btn = tk.Button(cabecalho, text="Copiar transcrição", font=botao_fonte,
-                           bg=tema.VERDE, fg=tema.BRANCO, activebackground=tema.VERDE_CLARO,
-                           activeforeground=tema.BRANCO, relief="flat", borderwidth=0,
-                           padx=16, pady=6, cursor="hand2",
-                           command=lambda: copiar())
+    copiar_btn = tema.botao(cabecalho, "Copiar transcrição", lambda: copiar(), botao_fonte)
     copiar_btn.pack(side="right")
 
     painel = tk.Frame(direita, bg=tema.PAINEL)

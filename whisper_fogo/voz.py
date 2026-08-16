@@ -134,11 +134,11 @@ def _icone(estado):
         ImageDraw.Draw(base).ellipse([8, 8, L - 8, L - 8], fill=(200, 80, 60, 255))
     if estado == "ocioso":                       # brasa apagada: modelo fora da GPU
         if MAC:
-            # Na barra de menus do macOS a chama vai como silhueta branca, no
+            # Na barra de menus do macOS a chama vai como silhueta cheia, no
             # mesmo tom dos ícones que o sistema desenha ao lado. A silhueta
-            # ainda é marcada como imagem de sistema na hora de exibir, e aí o
-            # próprio macOS escolhe o tom conforme o fundo da barra.
-            silhueta = Image.new("RGBA", base.size, (255, 255, 255, 255))
+            # também é marcada como imagem de sistema assim que entra na barra,
+            # e a partir daí quem escolhe o tom é o macOS, conforme o fundo.
+            silhueta = Image.new("RGBA", base.size, (0, 0, 0, 255))
             silhueta.putalpha(base.getchannel("A"))
             base = silhueta
         else:
@@ -200,14 +200,25 @@ class WhisperFogo:
                 # que quem recebe a marca é a imagem nova, e não a anterior.
                 threading.Timer(0.3, self._marcar_silhueta, [nome]).start()
 
-    def _marcar_silhueta(self, ocioso):
+    def _marcar_silhueta(self, estado):
         """Diz ao macOS que a chama em repouso é um desenho de sistema, para ele
         escolher o tom conforme o fundo da barra. Nos estados com cor a imagem
-        vai como está, senão a cor não chegaria à tela."""
-        try:
-            self.tray._status_item.button().image().setTemplate_(ocioso == "ocioso")
-        except Exception:
-            pass
+        vai como está, senão a cor não chegaria à tela.
+
+        A imagem só existe depois que a barra a recebe, então a marca é tentada
+        por alguns segundos em vez de uma vez só.
+        """
+        for _ in range(20):
+            imagem = getattr(self.tray, "_icon_image", None)
+            if imagem is None and getattr(self.tray, "_status_item", None):
+                imagem = self.tray._status_item.button().image()
+            if imagem is not None:
+                try:
+                    imagem.setTemplate_(estado == "ocioso")
+                except Exception:
+                    pass
+                return
+            time.sleep(0.5)
 
     # ---------- modelo ----------
     def carregar(self):
