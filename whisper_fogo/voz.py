@@ -133,7 +133,11 @@ def _icone(estado):
         ImageDraw.Draw(base).ellipse([8, 8, L - 8, L - 8], fill=(200, 80, 60, 255))
     if estado == "ocioso":                       # brasa apagada: modelo fora da GPU
         base = ImageEnhance.Color(base).enhance(0.0)
-        base.putalpha(base.getchannel("A").point(lambda a: int(a * 0.55)))
+        if not MAC:
+            # a bandeja do Windows fica sobre a barra escura, onde a chama cinza
+            # translúcida ainda se lê. A barra do macOS acompanha o tema e fica
+            # clara na maior parte do dia, então lá a brasa apagada vai opaca.
+            base.putalpha(base.getchannel("A").point(lambda a: int(a * 0.55)))
     if (cor := CORES.get(estado)):
         d = ImageDraw.Draw(base)
         r = L // 4
@@ -432,14 +436,18 @@ def main():
     threading.Thread(target=app.vigia_ocioso, daemon=True).start()
     threading.Thread(target=app.teclado.rodar, daemon=True).start()
 
+    # cada sistema anuncia as teclas com o nome que a pessoa vê no próprio teclado
+    par = "Command+Shift" if MAC else "Ctrl+Shift"
+    revisar = "Option" if MAC else "Alt"
+    liberar = "Liberar a memória agora" if MAC else "Liberar a GPU agora"
     menu = pystray.Menu(
         pystray.MenuItem("Histórico de ditados", lambda: app.abrir_historico(),
                          default=True),
-        pystray.MenuItem("Segurar Ctrl+Shift: ditar enquanto segura", None, enabled=False),
-        pystray.MenuItem("Ctrl+Shift+Space: ditar de mãos livres", None, enabled=False),
-        pystray.MenuItem("Encerrar mãos livres: Ctrl+Shift", None, enabled=False),
-        pystray.MenuItem("Somar Alt: revisar com o Gemma", None, enabled=False),
-        pystray.MenuItem("Liberar a GPU agora", lambda: setattr(app, "modelo", None)),
+        pystray.MenuItem(f"Segurar {par}: ditar enquanto segura", None, enabled=False),
+        pystray.MenuItem(f"{par}+Espaço: ditar de mãos livres", None, enabled=False),
+        pystray.MenuItem(f"Encerrar mãos livres: {par}", None, enabled=False),
+        pystray.MenuItem(f"Somar {revisar}: revisar com o Gemma", None, enabled=False),
+        pystray.MenuItem(liberar, lambda: setattr(app, "modelo", None)),
         pystray.MenuItem("Sair", lambda ic: ic.stop()),
     )
     app.tray = pystray.Icon("Whisper Fogo", _icone("ocioso"),

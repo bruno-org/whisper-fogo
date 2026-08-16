@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Instalador do Whisper Fogo para macOS.
 #
-# ATENÇÃO, e esta é a informação mais importante deste arquivo: o Whisper Fogo
-# foi construído e testado no Windows. O caminho do macOS existe, foi escrito com
-# as APIs certas, e está em teste agora. Até isso fechar, trate como beta.
+# Instala um aplicativo só, em ~/Applications, com o interpretador, as
+# bibliotecas, o código e os modelos dentro dele. O macOS então pede microfone e
+# acessibilidade uma vez, em nome do Whisper Fogo.
+#
 # Se algo quebrar, abra uma issue: https://github.com/bruno-org/whisper-fogo/issues
 #
 
@@ -14,7 +15,16 @@ set -euo pipefail
 # entram desde já, para que o que já está na máquina seja reaproveitado.
 export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
 
-DESTINO="$HOME/Library/Application Support/WhisperFogo"
+# Tudo mora dentro do próprio aplicativo: o interpretador, as bibliotecas, o
+# código e os modelos. É o que faz o macOS identificar um programa só, com o
+# nome e o ícone do Whisper Fogo, na hora de pedir microfone e acessibilidade.
+# Também é o que faz o descarte funcionar como no resto do macOS: arrastar o
+# aplicativo para o Lixo leva tudo junto.
+APP="$HOME/Applications/Whisper Fogo.app"
+RECURSOS="$APP/Contents/Resources"
+DESTINO="$RECURSOS/app"
+VENV="$RECURSOS/venv"
+PYTHON="$VENV/bin/python"
 REPO_ZIP="https://github.com/bruno-org/whisper-fogo/archive/refs/heads/main.zip"
 MODELO="large-v3-turbo"
 GEMMA_REPO="unsloth/gemma-3-4b-it-GGUF"
@@ -76,7 +86,7 @@ ok "Conexão com a internet"
 
 # ------------------------------------------------------------------- programa
 titulo "Instalando o programa"
-mkdir -p "$DESTINO"
+mkdir -p "$DESTINO" "$APP/Contents/MacOS" "$RECURSOS"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
@@ -104,19 +114,29 @@ if ! command -v uv >/dev/null 2>&1; then
 fi
 ok "uv pronto"
 
-cd "$DESTINO"
-uv venv --python 3.12 .venv
+# O interpretador vem para dentro do aplicativo como arquivo, e não como atalho
+# para uma pasta de fora. O macOS resolve o atalho até o arquivo verdadeiro
+# quando decide de quem é o pedido de permissão, e é o arquivo verdadeiro que
+# ele mostra na lista de Ajustes.
+rm -rf "$VENV" "$RECURSOS/python"
+uv venv --python 3.12 "$tmp/venv-base" >/dev/null
+raiz_python="$("$tmp/venv-base/bin/python" -c \
+  'import os, sys; print(os.path.dirname(os.path.dirname(os.path.realpath(sys.executable))))')"
+cp -R "$raiz_python" "$RECURSOS/python"
+ok "Python embarcado no aplicativo ($(du -sh "$RECURSOS/python" | cut -f1))"
+
+uv venv --python "$RECURSOS/python/bin/python3.12" "$VENV" >/dev/null
 ok "Ambiente Python isolado criado"
 
 echo "  Instalando as bibliotecas (pode levar alguns minutos)..."
-uv pip install --python "$DESTINO/.venv/bin/python" \
+uv pip install --python "$PYTHON" \
   faster-whisper sounddevice numpy pystray pillow pynput pyobjc-framework-Quartz
 ok "Bibliotecas instaladas"
 
 # -------------------------------------------------------------------- modelos
 titulo "Baixando o modelo de transcrição"
 echo "  large-v3-turbo, 1,6 GB. Só acontece uma vez."
-"$DESTINO/.venv/bin/python" - <<PY
+"$PYTHON" - <<PY
 from faster_whisper import WhisperModel
 WhisperModel("$MODELO", device="cpu", compute_type="int8")
 print("modelo pronto")
@@ -128,7 +148,7 @@ read -r resposta || resposta="n"
 if [[ ! "$resposta" =~ ^[nN] ]]; then
   titulo "Baixando a revisão de texto"
   mkdir -p "$DESTINO/modelos"
-  "$DESTINO/.venv/bin/python" - <<PY
+  "$PYTHON" - <<PY
 from huggingface_hub import hf_hub_download
 import shutil
 p = hf_hub_download("$GEMMA_REPO", "$GEMMA_ARQ")
@@ -142,7 +162,7 @@ PY
   echo "  Baixando o motor de revisão..."
   variante="macos-arm64"
   [[ "$arquitetura" == "arm64" ]] || variante="macos-x64"
-  url_motor="$("$DESTINO/.venv/bin/python" - "$variante" <<'PY'
+  url_motor="$("$PYTHON" - "$variante" <<'PY'
 import json, sys, urllib.request
 variante = sys.argv[1]
 api = "https://api.github.com/repos/ggml-org/llama.cpp/releases/latest"
@@ -170,13 +190,14 @@ fi
 # --------------------------------------------------------------- dicionario
 [[ -f "$DESTINO/dicionario.json" ]] || cp "$origem/whisper_fogo/dicionario.exemplo.json" "$DESTINO/dicionario.json" 2>/dev/null || true
 
-# --------------------------------------------------------------------- atalho
-titulo "Criando o atalho"
-APP="$HOME/Applications/Whisper Fogo.app"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cat > "$APP/Contents/MacOS/whisper-fogo" <<LANCADOR
+# ----------------------------------------------------------------- aplicativo
+titulo "Finalizando o aplicativo"
+# Caminhos relativos ao próprio pacote: o aplicativo continua inteiro se for
+# movido de lugar, e o interpretador que ele executa é o de dentro.
+cat > "$APP/Contents/MacOS/whisper-fogo" <<'LANCADOR'
 #!/bin/bash
-exec "$DESTINO/.venv/bin/python" "$DESTINO/voz.py"
+AQUI="$(cd "$(dirname "$0")/.." && pwd)"
+exec "$AQUI/Resources/venv/bin/python" "$AQUI/Resources/app/voz.py"
 LANCADOR
 chmod +x "$APP/Contents/MacOS/whisper-fogo"
 cat > "$APP/Contents/Info.plist" <<PLIST
@@ -199,10 +220,10 @@ titulo "Conferindo a instalação"
 # A conferência é informativa: o programa já está instalado neste ponto, e o
 # resultado de cada suíte aparece na tela sem interromper o restante.
 for t in corrigir.py aprendizado.py tema.py; do
-  "$DESTINO/.venv/bin/python" "$DESTINO/$t" 2>&1 | tail -1 || true
+  "$PYTHON" "$DESTINO/$t" 2>&1 | tail -1 || true
 done
 # o historico.py abre a janela quando chamado sem argumento, por isso o --teste
-"$DESTINO/.venv/bin/python" "$DESTINO/historico.py" --teste 2>&1 | tail -1 || true
+"$PYTHON" "$DESTINO/historico.py" --teste 2>&1 | tail -1 || true
 
 cat <<'FIM'
 
