@@ -23,6 +23,10 @@ COBERTURA_MINIMA = 0.5  # quanto do texto colado ainda precisa estar no campo
 VALUE, TEXT, LEGACY = 10002, 10014, 10018
 E_SENHA = 30052        # UIA_IsPasswordPropertyId
 
+MAC = sys.platform == "darwin"
+# O papel que o macOS dá ao campo de senha. É o equivalente do E_SENHA acima.
+PAPEL_SENHA = "AXSecureTextField"
+
 
 def _tokens(t):
     return re.findall(r"\S+|\n", t)
@@ -87,6 +91,46 @@ class Campo:
         return None
 
 
+class CampoMac:
+    """O mesmo envelope, sobre a API de Acessibilidade do macOS.
+
+    Lá o campo focado é pedido ao sistema inteiro, e não à janela da frente, o
+    que dá o mesmo alcance do UI Automation: qualquer editor, campo de chat ou
+    formulário em que o texto tenha sido colado.
+    """
+
+    def __init__(self):
+        from ApplicationServices import AXIsProcessTrusted, AXUIElementCreateSystemWide
+        if not AXIsProcessTrusted():
+            raise RuntimeError("a permissão de Acessibilidade ainda não está valendo")
+        self.sistema = AXUIElementCreateSystemWide()
+
+    def _atributo(self, elemento, nome):
+        from ApplicationServices import AXUIElementCopyAttributeValue
+        try:
+            erro, valor = AXUIElementCopyAttributeValue(elemento, nome, None)
+            return None if erro else valor
+        except Exception:
+            return None
+
+    def ler_focado(self):
+        """Conteúdo do campo com foco agora, ou None se não der para ler.
+
+        🔴 Campo de senha nunca é lido. O foco pode mudar durante os 60 s de
+        observação, e sem esta guarda o app leria a senha que você digitasse
+        logo depois de colar um ditado.
+        """
+        from ApplicationServices import (kAXFocusedUIElementAttribute,
+                                         kAXRoleAttribute, kAXValueAttribute)
+        elemento = self._atributo(self.sistema, kAXFocusedUIElementAttribute)
+        if elemento is None:
+            return None
+        if self._atributo(elemento, kAXRoleAttribute) == PAPEL_SENHA:
+            return None
+        valor = self._atributo(elemento, kAXValueAttribute)
+        return valor if isinstance(valor, str) and valor else None
+
+
 def observar(colado, ao_terminar, parar_agora, leitor=None):
     """Roda em thread própria. Chama ao_terminar(texto_final, motivo) uma vez.
 
@@ -100,7 +144,7 @@ def observar(colado, ao_terminar, parar_agora, leitor=None):
     """
     if leitor is None:
         try:
-            leitor = Campo().ler_focado
+            leitor = (CampoMac() if MAC else Campo()).ler_focado
         except Exception as e:
             print(f"[observador não subiu] {e}", file=sys.stderr)
             return

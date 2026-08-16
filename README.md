@@ -283,7 +283,7 @@ python clip.py          #  3 asserts: área de transferência com acento
 | Ditado com atalho global | testado | escrito, **não testado** |
 | Colagem no cursor | testado | escrito, **não testado** |
 | Histórico e cópia | testado | deve funcionar (Tk) |
-| Aprender pela sua correção | testado | **ainda não**, depende da API de acessibilidade da Apple |
+| Aprender pela sua correção | testado | escrito, com a API de acessibilidade da Apple |
 | Ícone na bandeja | testado | deve funcionar |
 
 **O Whisper Fogo nasceu no Windows.** No macOS, a instalação, a transcrição, a

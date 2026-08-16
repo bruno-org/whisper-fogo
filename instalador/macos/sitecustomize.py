@@ -18,7 +18,9 @@ sys.dont_write_bytecode = True
 if (os.path.basename(sys.executable) == "whisper-fogo"
         and sys.argv[:1] == [""]):          # sem argumento: veio do Finder
     conteudo = os.path.dirname(os.path.dirname(os.path.realpath(sys.executable)))
-    voz = os.path.join(conteudo, "Resources", "app", "voz.py")
+    programa = os.path.join(conteudo, "Resources", "app")
+    voz = os.path.join(programa, "voz.py")
+    sys.path.insert(0, programa)        # os módulos do programa moram aqui
     sys.argv = [voz]
     with open(voz, encoding="utf-8") as arquivo:
         codigo = compile(arquivo.read(), voz, "exec")

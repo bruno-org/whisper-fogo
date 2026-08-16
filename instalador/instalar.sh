@@ -145,7 +145,7 @@ print("modelo pronto")
 PY
 ok "Modelo de transcrição no lugar"
 
-printf "\n  Instalar também a revisão de texto pelo Alt? (S/n) "
+printf "\n  Instalar também a revisão de texto pelo Control? (S/n) "
 read -r resposta || resposta="n"
 if [[ ! "$resposta" =~ ^[nN] ]]; then
   titulo "Baixando a revisão de texto"
@@ -240,7 +240,11 @@ done
 # nome e o ícone do Whisper Fogo ao pedir microfone e acessibilidade, em vez do
 # caminho de um arquivo solto. O codesign vem no macOS de fábrica, e a
 # assinatura é a última etapa porque vale a partir do que está no pacote agora.
-find "$APP" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+# O Python guarda uma versão compilada de cada módulo na primeira vez que o usa.
+# Deixar essa etapa pronta agora é o que mantém o pacote igual ao que foi
+# assinado, em vez de ele mudar sozinho durante o primeiro uso.
+echo "  Preparando os módulos..."
+"$PYTHON" -m compileall -q "$RECURSOS/python/lib" "$VENV/lib" "$DESTINO" >/dev/null 2>&1 || true
 codesign --force --deep --sign - "$APP" >/dev/null 2>&1   && ok "Aplicativo assinado"   || aviso "Não consegui assinar o aplicativo. Ele funciona, e o pedido de permissão é que fica com o nome do arquivo."
 
 cat <<'FIM'
@@ -257,8 +261,5 @@ cat <<'FIM'
     Fn + Espaço ................... mãos livres, a Fn de novo encerra
     Somar Control ................. revisa o texto antes de colar
     Ícone na barra de menus ....... abre o histórico de ditados
-
-  O aprendizado por correção no campo ainda não funciona no macOS: depende da
-  API de Acessibilidade da Apple, que não pude testar. O resto funciona.
 
 FIM
