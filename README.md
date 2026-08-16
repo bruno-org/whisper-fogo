@@ -11,6 +11,13 @@ Sem nuvem, sem mensalidade, sem enviar suas informações para servidor nenhum.
 
 <a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat"><img src="docs/img/botao-windows.svg" alt="Baixar o instalador para Windows" height="28"></a>&nbsp;&nbsp;<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.zip"><img src="docs/img/botao-macos.svg" alt="Baixar o instalador para macOS" height="28"></a>
 
+<br>
+
+<sub><b>Os dois sistemas mostram um aviso de segurança na primeira abertura</b>, porque o programa não é assinado com conta paga.<br>
+<b>Windows:</b> clique em "Mais informações" e depois em "Executar assim mesmo".<br>
+<b>macOS:</b> feche o aviso, abra Ajustes do Sistema &gt; Privacidade e Segurança, role até o fim e clique em "Abrir Mesmo Assim".<br>
+<a href="#instalação">Passo a passo com o nome de cada botão</a></sub>
+
 <br><br>
 
 ![Licença MIT](https://img.shields.io/badge/licença-MIT-brasa?color=f75a4c)
@@ -124,29 +131,34 @@ dele.
 
 </div>
 
-No Windows, o Defender pode perguntar se você confia no arquivo, porque ele não é
-assinado digitalmente. Clique em "Mais informações" e depois em "Executar assim
-mesmo".
+Nos dois sistemas o programa não é assinado com conta paga, então na primeira vez
+aparece um aviso de segurança. Ele faz parte do caminho, e some depois da primeira
+autorização.
 
-No macOS, o download é um arquivo compactado. Dê dois cliques nele para sair o
-aplicativo **Instalar Whisper Fogo**.
+**No Windows**
 
-Ao abrir o aplicativo pela primeira vez, o macOS mostra **"o item não foi
-aberto"**. Isso acontece com todo programa que não paga a conta de desenvolvedor
-da Apple, e o caminho para liberar tem três passos:
+1. Dê dois cliques no arquivo baixado.
+2. O Defender pergunta se você confia. Clique em **Mais informações** e depois em
+   **Executar assim mesmo**.
+3. A instalação corre até o fim, cria o atalho no Desktop e no menu Iniciar, e
+   abre o programa na bandeja.
 
-1. Feche o aviso no botão **Concluído** (não clique em Mover para o Lixo).
-2. Abra **Ajustes do Sistema > Privacidade e Segurança** e role até o fim, na
-   seção **Segurança**. Vai ter uma linha citando o Instalar Whisper Fogo, com o
-   botão **Abrir Mesmo Assim**. Clique nele e autorize.
-3. Dê dois cliques no aplicativo de novo. Agora ele abre.
+**No macOS**
 
-Acontece uma vez só, por máquina. Se a linha não aparecer em Ajustes, abra o
-aplicativo mais uma vez para o aviso reaparecer, e ela volta.
+1. O download é um arquivo compactado. Dê dois cliques nele para sair o aplicativo
+   **Instalar Whisper Fogo**.
+2. Dê dois cliques no aplicativo. O sistema mostra **"o item não foi aberto"**:
+   feche no botão **Concluído**, e não em Mover para o Lixo.
+3. Abra **Ajustes do Sistema > Privacidade e Segurança**, role até o fim, na seção
+   **Segurança**, e clique em **Abrir Mesmo Assim** na linha do Instalar Whisper
+   Fogo. Se a linha não estiver lá, abra o aplicativo de novo para o aviso
+   reaparecer.
+4. Dê dois cliques no aplicativo mais uma vez. A instalação corre até o fim, o
+   programa abre na barra de menus, ganha ícone no Dock e passa a abrir junto com
+   o Mac.
 
-Ao terminar, o Whisper Fogo abre sozinho, fica na barra de menus, ganha um ícone
-no Dock e passa a abrir junto com o Mac. Na primeira gravação o sistema pede
-**Microfone** e **Acessibilidade**, as duas em nome do Whisper Fogo.
+Na primeira gravação, o macOS pede **Microfone** e **Acessibilidade**, as duas em
+nome do Whisper Fogo.
 
 ### Para quem quer mexer no código
 
