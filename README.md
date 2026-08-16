@@ -179,13 +179,14 @@ transcrevendo, numa RTX 4050 de notebook e num MacBook Air M1.
 | **Sistema** | macOS 11 | macOS 13 | macOS 14 ou mais novo |
 | **Memória RAM** | 8 GB | 8 GB | 16 GB ou mais |
 | **Disco** | 7 GB | 7 GB | 7 GB |
-| **Velocidade** | ~4x o tempo real | **~2x** | abaixo de 1x |
+| **Velocidade** | ~1,2x o tempo real | **~2x** | ~4x |
 | **O que dá para usar** | só transcrição | transcrição e revisão, uma de cada vez | transcrição e revisão juntas na memória |
 
-**Traduzindo a velocidade:** no mínimo do Windows, 1 minuto de fala leva uns 45
-segundos para virar texto; no ideal, o mesmo minuto sai em 2 segundos. No mínimo
-do macOS, 1 minuto leva uns 4 minutos; no recomendado, uns 30 segundos; no ideal,
-menos de 1 minuto de espera para 1 minuto de fala.
+**Traduzindo a velocidade:** o número é quantas vezes mais rápido que o tempo
+real, então quanto maior, menos você espera. No Windows, 1 minuto de fala vira
+texto em uns 45 segundos no mínimo e em 2 segundos no ideal. No macOS, o mesmo
+minuto sai em uns 50 segundos no mínimo, em 30 segundos no recomendado e em 15
+segundos no ideal.
 
 **Quanto cada parte ocupa da placa**, medido aqui:
 
