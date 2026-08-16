@@ -173,23 +173,19 @@ transcrevendo, numa RTX 4050 de notebook e num MacBook Air M1.
 
 **No macOS**
 
-|  | Mínimo | Recomendado |
-|---|---|---|
-| **Sistema** | macOS 11 | macOS 13 ou mais novo |
-| **Chip** | Intel | Apple Silicon (M1 ou mais novo) |
-| **Memória RAM** | 8 GB | 16 GB ou mais |
-| **Disco** | 7 GB | 7 GB |
-| **Velocidade** | ~2x o tempo real | ~2x o tempo real |
-| **O que dá para usar** | transcrição e revisão | transcrição e revisão |
-
-A transcrição roda na CPU em qualquer Mac, e a revisão de texto usa a GPU pelo
-Metal. Medido num MacBook Air M1 de 8 GB: 22 segundos de fala viram texto em 10
-segundos, o modelo entra na memória em 3 segundos e o programa em repouso ocupa
-38 MB de RAM.
+|  | Mínimo | Recomendado | Ideal |
+|---|---|---|---|
+| **Chip** | Intel Core i5 | **Apple Silicon** M1 ou M2 | Apple Silicon **Pro, Max ou M3** em diante |
+| **Sistema** | macOS 11 | macOS 13 | macOS 14 ou mais novo |
+| **Memória RAM** | 8 GB | 8 GB | 16 GB ou mais |
+| **Disco** | 7 GB | 7 GB | 7 GB |
+| **Velocidade** | ~4x o tempo real | **~2x** | abaixo de 1x |
+| **O que dá para usar** | só transcrição | transcrição e revisão, uma de cada vez | transcrição e revisão juntas na memória |
 
 **Traduzindo a velocidade:** no mínimo do Windows, 1 minuto de fala leva uns 45
-segundos para virar texto. No ideal, o mesmo minuto sai em 2 segundos. Num Mac com
-Apple Silicon, sai em uns 30 segundos.
+segundos para virar texto; no ideal, o mesmo minuto sai em 2 segundos. No mínimo
+do macOS, 1 minuto leva uns 4 minutos; no recomendado, uns 30 segundos; no ideal,
+menos de 1 minuto de espera para 1 minuto de fala.
 
 **Quanto cada parte ocupa da placa**, medido aqui:
 
@@ -302,13 +298,17 @@ python clip.py          #  3 asserts: área de transferência com acento
 | Aprender pela sua correção | UI Automation | API de Acessibilidade |
 | Ícone sempre à vista | bandeja | barra de menus |
 
-No macOS o Whisper Fogo é um aplicativo em `~/Applications`, com o Python e as
-bibliotecas dentro dele. Abre junto com o sistema, fica na barra de menus e o
-ícone dele leva ao histórico de ditados.
+**No Windows** o Whisper Fogo fica em `AppData\Local\WhisperFogo`, com o Python e
+as bibliotecas numa pasta isolada. Abre por atalho no Desktop e no menu Iniciar,
+fica na bandeja ao lado do relógio, e o ícone de lá leva ao histórico de ditados.
+A transcrição e a revisão usam a placa NVIDIA, e o modelo sai da memória de vídeo
+sozinho depois de 10 minutos parado.
 
-No macOS o sistema vai pedir duas permissões na primeira execução, em Ajustes,
-Privacidade e Segurança: **Microfone** e **Acessibilidade**. Sem a segunda, o
-atalho global não funciona.
+**No macOS** o Whisper Fogo é um aplicativo em `~/Applications`, com o Python e
+as bibliotecas dentro dele. Abre junto com o sistema, fica na barra de menus, tem
+ícone no Dock, e o ícone da barra leva ao histórico de ditados. A transcrição usa
+a CPU, a revisão usa a GPU pelo Metal, e o sistema pede microfone e acessibilidade
+uma vez, em nome do Whisper Fogo.
 
 ---
 
@@ -345,9 +345,8 @@ trafegando para fora.
 
 Issue e pull request são bem-vindos. O que mais ajuda agora, em ordem:
 
-1. **Testar no macOS** e relatar o que quebrou.
-2. **Casos em que a transcrição erra feio** em português, com o áudio se possível.
-3. **Palavras que o aprendizado deveria ou não deveria ter pegado.**
+1. **Casos em que a transcrição erra feio** em português, com o áudio se possível.
+2. **Palavras que o aprendizado deveria ou não deveria ter pegado.**
 
 O código é comentado em português e explica o porquê das decisões, não só o quê.
 Se for mexer, mantenha esse padrão.
