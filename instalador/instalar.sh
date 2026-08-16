@@ -41,7 +41,7 @@ cat <<'ARTE'
 
   ####   WHISPER FOGO
   ####   Transcrição de voz offline, especializada no português brasileiro.
-         Instalador para macOS (beta, em teste)
+         Instalador para macOS
 
 ARTE
 

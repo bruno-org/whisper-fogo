@@ -16,7 +16,7 @@ Sem nuvem, sem mensalidade, sem enviar suas informações para servidor nenhum.
 ![Licença MIT](https://img.shields.io/badge/licença-MIT-brasa?color=f75a4c)
 ![Roda offline](https://img.shields.io/badge/nuvem-nenhuma-2ea043)
 ![Português do Brasil](https://img.shields.io/badge/idioma-português%20do%20Brasil-f7c948)
-![Testes](https://img.shields.io/badge/testes-45%20asserts-2ea043)
+![Testes](https://img.shields.io/badge/testes-65%20asserts-2ea043)
 
 </div>
 
@@ -43,17 +43,13 @@ existe servidor para cair, não existe limite de minutos por mês.
 
 ## Como funciona na prática
 
-| Você faz | O que acontece |
-|---|---|
-| Segura `Ctrl` + `Shift` e fala | Grava enquanto segurar, cola o texto ao soltar |
-| `Ctrl` + `Shift` + `Espaço` | Mãos livres: fala à vontade, a mesma tecla encerra |
-| Soma `Alt` enquanto fala | Revisa o texto antes de colar: tira "né", "tipo", "aí", pontua e quebra em parágrafos |
-| Clica no ícone da bandeja | Abre o histórico de tudo que você já ditou |
-| Corrige uma palavra no campo | O programa aprende a sua grafia e nunca mais erra aquela palavra |
-
-No macOS as teclas são as do teclado de lá: a **`Fn`** no lugar de `Ctrl` + `Shift`,
-`Fn` + `Espaço` para as mãos livres, e o **`Control`** no lugar do `Alt` para a
-revisão.
+| Você faz | No Windows | No macOS | O que acontece |
+|---|---|---|---|
+| Fala segurando a tecla | `Ctrl` + `Shift` | `Fn` | Grava enquanto segurar, cola o texto ao soltar |
+| Fala de mãos livres | `Ctrl` + `Shift` + `Espaço` | `Fn` + `Espaço` | Fala à vontade, a mesma tecla encerra |
+| Soma uma tecla enquanto fala | `Alt` | `Control` | Revisa o texto antes de colar: tira "né", "tipo", "aí", pontua e quebra em parágrafos |
+| Clica no ícone | na bandeja | na barra de menus | Abre o histórico de tudo que você já ditou |
+| Corrige uma palavra no campo | | | O programa aprende a sua grafia e nunca mais erra aquela palavra |
 
 O texto vai para onde o cursor estiver: editor de código, campo de chat, e-mail,
 terminal, formulário no navegador. Se o programa aceita texto, ele aceita a sua voz.
@@ -65,7 +61,7 @@ terminal, formulário no navegador. Se o programa aceita texto, ele aceita a sua
 <div align="center">
 <img src="docs/img/historico.png" alt="Janela de histórico do Whisper Fogo" width="820">
 <br>
-<sub>O asterisco à esquerda da data marca o ditado que passou pela revisão de texto, a que você aciona somando <code>Alt</code> enquanto fala.</sub>
+<sub>O asterisco à esquerda da data marca o ditado que passou pela revisão de texto, a que você aciona somando <code>Alt</code> enquanto fala, ou <code>Control</code> no Mac.</sub>
 </div>
 
 Toda transcrição é salva **antes** de ir para a área de transferência. Se você
@@ -133,11 +129,14 @@ assinado digitalmente. Clique em "Mais informações" e depois em "Executar assi
 mesmo".
 
 No macOS, o download é um arquivo compactado. Dê dois cliques nele para sair o
-aplicativo **Instalar Whisper Fogo** e dois cliques no aplicativo. Como ele não
-é assinado com uma conta paga de desenvolvedor da Apple, o sistema mostra um
-aviso na primeira vez. Feche o aviso, abra **Ajustes do Sistema > Privacidade e
-Segurança**, role até o fim e clique em **Abrir Mesmo Assim**. Isso acontece uma
-vez só, e daí em diante o instalador abre direto.
+aplicativo **Instalar Whisper Fogo** e dois cliques no aplicativo. Na primeira
+vez o sistema mostra um aviso: feche o aviso, abra **Ajustes do Sistema >
+Privacidade e Segurança**, role até o fim e clique em **Abrir Mesmo Assim**.
+Acontece uma vez só.
+
+Ao terminar, o Whisper Fogo abre sozinho, fica na barra de menus, ganha um ícone
+no Dock e passa a abrir junto com o Mac. Na primeira gravação o sistema pede
+**Microfone** e **Acessibilidade**, as duas em nome do Whisper Fogo.
 
 ### Para quem quer mexer no código
 
@@ -159,7 +158,9 @@ copie os `.py` por cima da pasta de instalação.
 ### O que a sua máquina precisa ter
 
 Os números abaixo foram **medidos**, não estimados: é o consumo real do programa
-transcrevendo, numa RTX 4050 de notebook.
+transcrevendo, numa RTX 4050 de notebook e num MacBook Air M1.
+
+**No Windows**
 
 |  | Mínimo | Recomendado | Ideal |
 |---|---|---|---|
@@ -170,9 +171,25 @@ transcrevendo, numa RTX 4050 de notebook.
 | **Velocidade** | ~1,4x o tempo real | ~15x | **~29x** |
 | **O que dá para usar** | só transcrição | transcrição e revisão, uma de cada vez | transcrição e revisão juntas na memória |
 
-**Traduzindo a velocidade:** no mínimo, 1 minuto de fala leva uns 45 segundos para
-virar texto. No ideal, o mesmo minuto sai em 2 segundos. Foram 42 minutos de áudio
-transcritos em 86 segundos no teste.
+**No macOS**
+
+|  | Mínimo | Recomendado |
+|---|---|---|
+| **Sistema** | macOS 11 | macOS 13 ou mais novo |
+| **Chip** | Intel | Apple Silicon (M1 ou mais novo) |
+| **Memória RAM** | 8 GB | 16 GB ou mais |
+| **Disco** | 7 GB | 7 GB |
+| **Velocidade** | ~2x o tempo real | ~2x o tempo real |
+| **O que dá para usar** | transcrição e revisão | transcrição e revisão |
+
+A transcrição roda na CPU em qualquer Mac, e a revisão de texto usa a GPU pelo
+Metal. Medido num MacBook Air M1 de 8 GB: 22 segundos de fala viram texto em 10
+segundos, o modelo entra na memória em 3 segundos e o programa em repouso ocupa
+38 MB de RAM.
+
+**Traduzindo a velocidade:** no mínimo do Windows, 1 minuto de fala leva uns 45
+segundos para virar texto. No ideal, o mesmo minuto sai em 2 segundos. Num Mac com
+Apple Silicon, sai em uns 30 segundos.
 
 **Quanto cada parte ocupa da placa**, medido aqui:
 
@@ -219,12 +236,12 @@ assim mesmo.
 | Componente | Tamanho | Para quê |
 |---|---|---|
 | Whisper `large-v3-turbo` | 1,6 GB | Transcrever a fala |
-| Gemma 3 4B (`Q4_K_M`) | 2,4 GB | Revisar o texto quando você segura `Alt` |
-| llama.cpp com CUDA | 1,1 GB | Rodar o modelo de revisão na GPU |
+| Gemma 3 4B (`Q4_K_M`) | 2,4 GB | Revisar o texto quando você soma `Alt`, ou `Control` no Mac |
+| llama.cpp | 1,1 GB no Windows, 11 MB no Mac | Rodar o modelo de revisão, com CUDA no Windows e Metal no Mac |
 | Python isolado e bibliotecas | ~2 GB | O programa em si |
 
-A revisão de texto é opcional e o instalador pergunta. Sem ela, o ditado funciona
-igual, só não tem o `Alt`.
+A revisão de texto é opcional e o instalador pergunta, nos dois sistemas. Sem
+ela, o ditado funciona igual, só não tem a tecla de revisão.
 
 **Velocidade medida** numa RTX 4050 para notebook: 42 minutos de áudio transcritos
 em 86 segundos, ou 29 vezes mais rápido que o tempo real. Ditados curtos do dia a
@@ -249,7 +266,7 @@ coisa:
 
 | Arquivo | Responsabilidade |
 |---|---|
-| `voz.py` | O programa: bandeja, gravação, transcrição, colagem |
+| `voz.py` | O programa: ícone na bandeja ou na barra de menus, gravação, transcrição, colagem |
 | `teclado.py` | O atalho global, com a máquina de estados de segurar e travar |
 | `clip.py` | Área de transferência e colagem, por sistema operacional |
 | `corrigir.py` | Aplica o dicionário na transcrição |
@@ -272,24 +289,22 @@ python clip.py          #  3 asserts: área de transferência com acento
 
 ---
 
-## Estado de cada plataforma
+## O mesmo programa nos dois sistemas
 
 | Recurso | Windows | macOS |
 |---|---|---|
-| Instalação de ponta a ponta | testado | testado em Apple Silicon |
-| Transcrição | testado | testada, roda na CPU |
-| Revisão de texto pelo `Alt` | testado | testada, com Metal |
-| Suítes de teste | testado | testadas |
-| Ditado com atalho global | testado | escrito, **não testado** |
-| Colagem no cursor | testado | escrito, **não testado** |
-| Histórico e cópia | testado | deve funcionar (Tk) |
-| Aprender pela sua correção | testado | escrito, com a API de acessibilidade da Apple |
-| Ícone na bandeja | testado | deve funcionar |
+| Instalação de ponta a ponta | sim | sim |
+| Ditado com atalho global | `Ctrl` + `Shift` | `Fn` |
+| Colagem no cursor | sim | sim |
+| Transcrição | GPU NVIDIA | CPU |
+| Revisão de texto | GPU NVIDIA | Metal |
+| Histórico e cópia | sim | sim |
+| Aprender pela sua correção | UI Automation | API de Acessibilidade |
+| Ícone sempre à vista | bandeja | barra de menus |
 
-**O Whisper Fogo nasceu no Windows.** No macOS, a instalação, a transcrição, a
-revisão de texto e as suítes de teste rodam em Apple Silicon. O ditado por
-atalho global depende das duas permissões do sistema, e é a parte que continua
-em fase beta.
+No macOS o Whisper Fogo é um aplicativo em `~/Applications`, com o Python e as
+bibliotecas dentro dele. Abre junto com o sistema, fica na barra de menus e o
+ícone dele leva ao histórico de ditados.
 
 No macOS o sistema vai pedir duas permissões na primeira execução, em Ajustes,
 Privacidade e Segurança: **Microfone** e **Acessibilidade**. Sem a segunda, o
