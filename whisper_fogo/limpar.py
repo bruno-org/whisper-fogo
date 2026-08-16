@@ -13,7 +13,8 @@ import urllib.request
 from pathlib import Path
 
 BASE = Path(__file__).parent
-EXE = BASE / "llama" / "llama-server.exe"
+MAC = sys.platform == "darwin"
+EXE = BASE / "llama" / ("llama-server" if MAC else "llama-server.exe")
 MODELO = BASE / "modelos" / "gemma-3-4b-it-Q4_K_M.gguf"
 PORTA = 8082
 URL = f"http://127.0.0.1:{PORTA}/v1/chat/completions"
@@ -58,11 +59,14 @@ def subir_servidor(proc=None, espera=60):
     extras = [str(nv / s / "bin") for s in ("cublas", "cudnn", "cuda_nvrtc")
               if (nv / s / "bin").is_dir()]
     env["PATH"] = os.pathsep.join(extras + [env["PATH"]])
+    # CREATE_NO_WINDOW existe só no Windows, e é lá que evita a janela preta
+    # piscando. No macOS o processo já sobe sem janela nenhuma.
+    janela = {} if MAC else {"creationflags": 0x08000000}
     proc = subprocess.Popen(
         [str(EXE), "-m", str(MODELO), "-ngl", "99", "-c", "4096",
          "--host", "127.0.0.1", "--port", str(PORTA), "-t", "6", "--no-mmap"],
         env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        creationflags=0x08000000)  # CREATE_NO_WINDOW: sem janela preta piscando
+        **janela)
     limite = time.time() + espera
     while time.time() < limite:
         if _no_ar():

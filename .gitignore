@@ -21,3 +21,6 @@ falha-*.wav
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Anexos de instalacao gerados por script
+dist/

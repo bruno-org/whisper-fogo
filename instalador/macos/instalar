@@ -1,0 +1,18 @@
+#!/bin/bash
+# Executável do "Instalar Whisper Fogo.app".
+#
+# Busca a versão corrente do instalador no repositório e a executa numa janela
+# do Terminal, onde você acompanha o progresso e responde às perguntas.
+
+set -u
+
+URL="https://raw.githubusercontent.com/bruno-org/whisper-fogo/main/instalador/instalar.sh"
+DESTINO="${TMPDIR:-/tmp}/whisper-fogo-instalar.sh"
+
+if ! /usr/bin/curl -fsSL -o "$DESTINO" "$URL"; then
+  /usr/bin/osascript -e 'display alert "Whisper Fogo" message "Não consegui baixar o instalador. Confira a sua conexão com a internet e abra este aplicativo de novo."'
+  exit 1
+fi
+
+/bin/chmod +x "$DESTINO"
+exec /usr/bin/open -a Terminal "$DESTINO"

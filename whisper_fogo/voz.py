@@ -29,6 +29,10 @@ if not MAC:
 
 BASE = Path(__file__).parent
 
+# Interpretador que abre as janelas auxiliares em processo próprio: no Windows a
+# variante sem console, no macOS o Python do ambiente isolado.
+PYTHON_JANELA = BASE / ".venv" / ("bin/python" if MAC else "Scripts/pythonw.exe")
+
 
 def beep(frequencia, ms):
     """Sinal sonoro de início, fim e erro. É o retorno que diz que o microfone
@@ -362,8 +366,7 @@ class WhisperFogo:
                       file=sys.stderr)
             if novos:
                 print(f"[aprendido: {novos}]", file=sys.stderr)
-                pythonw = BASE / ".venv" / "Scripts" / "pythonw.exe"
-                subprocess.Popen([str(pythonw), str(BASE / "aviso.py")]
+                subprocess.Popen([str(PYTHON_JANELA), str(BASE / "aviso.py")]
                                  + [f"{v}>{n}" for v, n in novos])
         except Exception as e:
             print(f"[aprendizado falhou] {e}", file=sys.stderr)
@@ -380,8 +383,7 @@ class WhisperFogo:
     def abrir_historico(self):
         if self.janela and self.janela.poll() is None:
             return                       # já está aberta, não empilha janela
-        pythonw = BASE / ".venv" / "Scripts" / "pythonw.exe"
-        self.janela = subprocess.Popen([str(pythonw), str(BASE / "historico.py")])
+        self.janela = subprocess.Popen([str(PYTHON_JANELA), str(BASE / "historico.py")])
 
     # ---------- reescrita opcional ----------
     def limpar(self, texto):

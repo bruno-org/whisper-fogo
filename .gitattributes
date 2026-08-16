@@ -9,5 +9,9 @@
 *.py       text eol=lf
 *.md       text eol=lf
 
+# o executável do pacote do macOS não tem extensão
+instalador/macos/instalar text eol=lf
+
 *.png      binary
 *.ico      binary
+*.icns     binary

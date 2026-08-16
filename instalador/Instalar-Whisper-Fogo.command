@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Instalador de um clique do Whisper Fogo para macOS.
-# Baixe este arquivo e dê dois cliques nele.
+# Instalador do Whisper Fogo para macOS, para quem já tem os arquivos em disco.
 #
-# Se o macOS recusar por não ser de desenvolvedor identificado, clique com o
-# botão direito no arquivo e escolha Abrir, ou rode uma vez:
-#   xattr -d com.apple.quarantine "Instalar-Whisper-Fogo.command"
+# O caminho de dois cliques é o aplicativo "Instalar Whisper Fogo", que sai do
+# botão de download do README. Este arquivo roda o mesmo instalador a partir de
+# uma pasta do repositório, pelo Terminal:
+#
+#   bash instalador/Instalar-Whisper-Fogo.command
 
 set -euo pipefail
 cd "$(dirname "$0")"

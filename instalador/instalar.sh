@@ -54,10 +54,18 @@ livreGB=$(df -g "$HOME" | awk 'NR==2 {print $4}')
 if (( livreGB >= 10 )); then ok "Espaço livre: ${livreGB} GB"
 else erro "Faltam $(( 10 - livreGB )) GB de espaço. A instalação ocupa cerca de 8 GB."; problemas=1; fi
 
-if ! xcode-select -p >/dev/null 2>&1; then
-  aviso "Ferramentas de linha de comando da Apple ausentes. Vou pedir a instalação."
-  xcode-select --install || true
+# Tudo o que a instalação usa vem no macOS de fábrica (curl, tar, unzip) ou é
+# binário pronto para esta arquitetura: o Python isolado do uv e as bibliotecas
+# em formato wheel. Nada é compilado na sua máquina.
+for ferramenta in curl tar unzip; do
+  command -v "$ferramenta" >/dev/null 2>&1 || { erro "Falta o comando $ferramenta."; problemas=1; }
+done
+
+if ! curl -fsS --head --max-time 20 https://github.com >/dev/null 2>&1; then
+  erro "Não consegui falar com a internet. Confira a sua conexão e rode de novo."
+  problemas=1
 fi
+ok "Conexão com a internet"
 
 (( problemas == 0 )) || { erro "Corrija os itens acima e rode de novo."; exit 1; }
 
@@ -111,7 +119,7 @@ PY
 ok "Modelo de transcrição no lugar"
 
 printf "\n  Instalar também a revisão de texto pelo Alt? (S/n) "
-read -r resposta
+read -r resposta || resposta="n"
 if [[ ! "$resposta" =~ ^[nN] ]]; then
   titulo "Baixando a revisão de texto"
   mkdir -p "$DESTINO/modelos"
@@ -123,8 +131,35 @@ shutil.copy(p, "$DESTINO/modelos/$GEMMA_ARQ")
 print("gemma pronto")
 PY
   ok "Modelo de revisão no lugar"
-  aviso "No macOS o motor llama.cpp não é instalado automaticamente ainda."
-  aviso "Instale com: brew install llama.cpp"
+
+  # O motor que roda o modelo vem pronto das versões oficiais do llama.cpp, na
+  # variante da arquitetura desta máquina, com aceleração por Metal.
+  echo "  Baixando o motor de revisão..."
+  variante="macos-arm64"
+  [[ "$arquitetura" == "arm64" ]] || variante="macos-x64"
+  url_motor="$("$DESTINO/.venv/bin/python" - "$variante" <<'PY'
+import json, sys, urllib.request
+variante = sys.argv[1]
+api = "https://api.github.com/repos/ggml-org/llama.cpp/releases/latest"
+try:
+    with urllib.request.urlopen(api, timeout=30) as resposta:
+        dados = json.load(resposta)
+    for anexo in dados.get("assets", []):
+        if variante in anexo["name"] and anexo["name"].endswith(".tar.gz"):
+            print(anexo["browser_download_url"])
+            break
+except Exception:
+    pass
+PY
+)"
+  if [[ -n "$url_motor" ]] && curl -fsSL -o "$tmp/motor.tar.gz" "$url_motor"; then
+    mkdir -p "$DESTINO/llama"
+    tar -xzf "$tmp/motor.tar.gz" -C "$DESTINO/llama" --strip-components=1
+    chmod +x "$DESTINO/llama/llama-server"
+    ok "Motor de revisão instalado"
+  else
+    aviso "Não consegui baixar o motor de revisão. O ditado funciona; a revisão pelo Alt fica de fora."
+  fi
 fi
 
 # --------------------------------------------------------------- dicionario
@@ -151,16 +186,18 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>NSMicrophoneUsageDescription</key><string>O Whisper Fogo grava a sua voz para transcrever, sempre na sua máquina.</string>
 </dict></plist>
 PLIST
-cp "$DESTINO/fogo.png" "$APP/Contents/Resources/fogo.png" 2>/dev/null || true
+cp "$DESTINO/fogo.icns" "$APP/Contents/Resources/fogo.icns" 2>/dev/null || true
 ok "Aplicativo criado em ~/Applications"
 
 # --------------------------------------------------------------------- testes
 titulo "Conferindo a instalação"
+# A conferência é informativa: o programa já está instalado neste ponto, e o
+# resultado de cada suíte aparece na tela sem interromper o restante.
 for t in corrigir.py aprendizado.py tema.py; do
-  "$DESTINO/.venv/bin/python" "$DESTINO/$t" | tail -1
+  "$DESTINO/.venv/bin/python" "$DESTINO/$t" 2>&1 | tail -1 || true
 done
 # o historico.py abre a janela quando chamado sem argumento, por isso o --teste
-"$DESTINO/.venv/bin/python" "$DESTINO/historico.py" --teste | tail -1
+"$DESTINO/.venv/bin/python" "$DESTINO/historico.py" --teste 2>&1 | tail -1 || true
 
 cat <<'FIM'
 

@@ -9,7 +9,7 @@ Sem nuvem, sem mensalidade, sem enviar suas informações para servidor nenhum.
 
 <br>
 
-<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat"><img src="docs/img/botao-windows.svg" alt="Baixar o instalador para Windows" height="28"></a>&nbsp;&nbsp;<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.command"><img src="docs/img/botao-macos.svg" alt="Baixar o instalador para macOS" height="28"></a>
+<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat"><img src="docs/img/botao-windows.svg" alt="Baixar o instalador para Windows" height="28"></a>&nbsp;&nbsp;<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.zip"><img src="docs/img/botao-macos.svg" alt="Baixar o instalador para macOS" height="28"></a>
 
 <br><br>
 
@@ -120,14 +120,20 @@ dele.
 
 <div align="center">
 
-<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat"><img src="docs/img/botao-windows.svg" alt="Baixar o instalador para Windows" height="28"></a>&nbsp;&nbsp;<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.command"><img src="docs/img/botao-macos.svg" alt="Baixar o instalador para macOS" height="28"></a>
+<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat"><img src="docs/img/botao-windows.svg" alt="Baixar o instalador para Windows" height="28"></a>&nbsp;&nbsp;<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.zip"><img src="docs/img/botao-macos.svg" alt="Baixar o instalador para macOS" height="28"></a>
 
 </div>
 
 No Windows, o Defender pode perguntar se você confia no arquivo, porque ele não é
 assinado digitalmente. Clique em "Mais informações" e depois em "Executar assim
-mesmo". No macOS, clique com o botão direito no arquivo e escolha **Abrir**, em
-vez de dois cliques, pela mesma razão.
+mesmo".
+
+No macOS, o download é um arquivo compactado. Dê dois cliques nele para sair o
+aplicativo **Instalar Whisper Fogo** e dois cliques no aplicativo. Como ele não
+é assinado com uma conta paga de desenvolvedor da Apple, o sistema mostra um
+aviso na primeira vez. Feche o aviso, abra **Ajustes do Sistema > Privacidade e
+Segurança**, role até o fim e clique em **Abrir Mesmo Assim**. Isso acontece uma
+vez só, e daí em diante o instalador abre direto.
 
 ### Para quem quer mexer no código
 

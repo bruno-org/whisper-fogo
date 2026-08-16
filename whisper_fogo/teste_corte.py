@@ -27,7 +27,7 @@ class StreamFalso:
 
 
 def preparar():
-    voz.winsound.Beep = lambda *a: None       # teste silencioso
+    voz.beep = lambda *a: None                # teste silencioso, nos dois sistemas
     # Só o InputStream é falso. Trocar o _terminate do sounddevice deixaria o
     # PortAudio sem encerrar e o processo do teste travava na saída, sem que o
     # app real tivesse problema nenhum.
