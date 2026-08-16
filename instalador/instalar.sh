@@ -268,10 +268,13 @@ cat > "$AGENTE" <<AGENT
 AGENT
 ok "Abre junto com o Mac"
 
-# Ícone fixo no Dock, para achar o programa junto com os outros.
-if ! defaults read com.apple.dock persistent-apps 2>/dev/null | grep -q "Whisper Fogo.app"; then
+# Ícone fixo no Dock, para achar o programa junto com os outros. O Dock guarda
+# o endereço com os espaços escritos como %20, e é por esse formato que a
+# checagem passa, senão a mesma entrada entraria de novo a cada instalação.
+APP_URL="file://$(printf '%s' "$APP" | sed 's/ /%20/g')/"
+if ! defaults read com.apple.dock persistent-apps 2>/dev/null | grep -qF "$APP_URL"; then
   defaults write com.apple.dock persistent-apps -array-add \
-    "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>$APP</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>" \
+    "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>$APP_URL</string><key>_CFURLStringType</key><integer>15</integer></dict></dict></dict>" \
     2>/dev/null && killall Dock 2>/dev/null
 fi
 ok "Ícone no Dock"

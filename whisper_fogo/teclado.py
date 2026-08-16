@@ -207,6 +207,7 @@ else:
             self.timer = None
             self.alt_pressionado = False
             self.fn_baixa = False
+            self.ja_viu_fn = False
 
         def _evento(self, proxy, tipo, evento, refcon):
             from Quartz import (CGEventGetFlags, CGEventGetIntegerValueField,
@@ -219,6 +220,9 @@ else:
                         self.app.alt = True          # revisão pedida no meio da fala
                     if fn and not self.fn_baixa:
                         self.fn_baixa = True
+                        if not self.ja_viu_fn:      # confirma a escuta, uma vez
+                            self.ja_viu_fn = True
+                            print("[tecla Fn reconhecida]", file=sys.stderr)
                         self.alt_pressionado = bool(flags & MASCARA_CONTROL)
                         self._fn_desceu()
                     elif not fn and self.fn_baixa:
