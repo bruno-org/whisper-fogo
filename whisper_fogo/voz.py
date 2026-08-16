@@ -437,8 +437,8 @@ def main():
     threading.Thread(target=app.teclado.rodar, daemon=True).start()
 
     # cada sistema anuncia as teclas com o nome que a pessoa vê no próprio teclado
-    par = "Command+Shift" if MAC else "Ctrl+Shift"
-    revisar = "Option" if MAC else "Alt"
+    par = "Fn" if MAC else "Ctrl+Shift"
+    revisar = "Control" if MAC else "Alt"
     liberar = "Liberar a memória agora" if MAC else "Liberar a GPU agora"
     menu = pystray.Menu(
         pystray.MenuItem("Histórico de ditados", lambda: app.abrir_historico(),

@@ -4,14 +4,18 @@ O comportamento copiado do Wispr Flow, e que o `RegisterHotKey` do Windows não
 alcança: reagir a modificador sozinho, sem tecla comum junto, e reagir à soltura
 da tecla. Por isso é hook de baixo nível no Windows e listener global no macOS.
 
-    IDLE    -> segura Ctrl+Shift por SEGURAR_MS ......... grava enquanto segurar
+No Windows:
+
+    IDLE    -> segura Ctrl+Shift por SEGURAR_MS ........ grava enquanto segurar
             -> Ctrl+Shift+Espaço ....................... grava de mãos livres
     PTT     -> soltou Ctrl ou Shift .................... encerra e cola
             -> apertou Espaço no meio .................. vira mãos livres
     TRAVADO -> Ctrl+Shift de novo (com ou sem Espaço) .. encerra e cola
 
-No macOS a leitura do teclado depende da permissão de Acessibilidade, e o
-listener só nasce depois que ela está valendo. Ver a seção do README.
+No macOS as teclas são as que o Wispr Flow usa lá: a Fn no lugar do par de
+modificadores, e o Control no lugar do Alt. A leitura do teclado depende da
+permissão de Acessibilidade, e a escuta só nasce depois que ela está valendo.
+Ver a seção do README.
 """
 import sys
 import threading
@@ -176,60 +180,83 @@ else:
             time.sleep(intervalo)
         print("[permissão de Acessibilidade concedida, atalho no ar]", file=sys.stderr)
 
-    class Teclado:
-        """Mesma máquina de estados, ouvindo pelo pynput.
+    # Teclas do Wispr Flow no macOS, lidas da configuração dele: a Fn sozinha
+    # grava enquanto segura, a Fn com espaço grava de mãos livres, e o Control
+    # somado à Fn manda o texto para revisão. São os códigos do sistema.
+    ESPACO = 49
+    MASCARA_FN = 0x800000
+    MASCARA_CONTROL = 0x40000
 
-        No macOS o par de modificadores é Command + Shift, porque Control+Shift
-        colide com atalhos do sistema.
+    class Teclado:
+        """Mesma máquina de estados, ouvindo o teclado pelo Quartz.
+
+        A Fn não chega como tecla comum: ela vira um sinalizador no evento de
+        mudança de modificadores, e é por isso que a escuta acontece nesse nível
+        em vez de na camada de teclas.
+
+            IDLE    -> segura Fn por SEGURAR_MS ......... grava enquanto segurar
+                    -> Fn + Espaço ..................... grava de mãos livres
+            PTT     -> soltou Fn ....................... encerra e cola
+                    -> apertou Espaço no meio .......... vira mãos livres
+            TRAVADO -> Fn de novo ...................... encerra e cola
         """
 
         def __init__(self, app):
             self.app = app
-            self.baixo = set()
             self.estado = "IDLE"
             self.timer = None
             self.alt_pressionado = False
+            self.fn_baixa = False
 
-        def _modificadores(self):
-            from pynput.keyboard import Key
-            return (Key.cmd in self.baixo or Key.cmd_l in self.baixo) and                    (Key.shift in self.baixo or Key.shift_l in self.baixo)
+        def _evento(self, proxy, tipo, evento, refcon):
+            from Quartz import (CGEventGetFlags, CGEventGetIntegerValueField,
+                                kCGEventFlagsChanged, kCGKeyboardEventKeycode)
+            try:
+                flags = CGEventGetFlags(evento)
+                if tipo == kCGEventFlagsChanged:
+                    fn = bool(flags & MASCARA_FN)
+                    if bool(flags & MASCARA_CONTROL) and self.estado in ("PTT", "TRAVADO"):
+                        self.app.alt = True          # revisão pedida no meio da fala
+                    if fn and not self.fn_baixa:
+                        self.fn_baixa = True
+                        self.alt_pressionado = bool(flags & MASCARA_CONTROL)
+                        self._fn_desceu()
+                    elif not fn and self.fn_baixa:
+                        self.fn_baixa = False
+                        self._fn_subiu()
+                elif self.fn_baixa and CGEventGetIntegerValueField(
+                        evento, kCGKeyboardEventKeycode) == ESPACO:
+                    self._espaco()
+            except Exception as e:
+                print(f"[teclado] {type(e).__name__}: {e}", file=sys.stderr)
+            return evento
 
-        def _descer(self, tecla):
-            from pynput.keyboard import Key
-            self.baixo.add(tecla)
-            if tecla in (Key.alt, Key.alt_l):
-                if self.estado in ("PTT", "TRAVADO"):
-                    self.app.alt = True
-                return
-            if tecla == Key.space and self._modificadores():
-                if self.estado in ("ARMADO", "PTT"):
-                    self._cancelar_timer()
-                    if self.estado == "ARMADO":
-                        self.app.fila_cmd.put(("iniciar", self.alt_pressionado))
-                    self.estado = "TRAVADO"
-                return
-            if self._modificadores():
-                if self.estado == "TRAVADO":
-                    self._parar()
-                    self.estado = "ENCERRANDO"
-                elif self.estado == "IDLE":
-                    self.estado = "ARMADO"
-                    self.timer = threading.Timer(SEGURAR_MS / 1000, self._virar_ptt)
-                    self.timer.start()
+        def _fn_desceu(self):
+            if self.estado == "TRAVADO":
+                self._parar()
+                self.estado = "ENCERRANDO"
+            elif self.estado == "IDLE":
+                self.estado = "ARMADO"
+                self.timer = threading.Timer(SEGURAR_MS / 1000, self._virar_ptt)
+                self.timer.start()
 
-        def _subir(self, tecla):
-            from pynput.keyboard import Key
-            self.baixo.discard(tecla)
-            if tecla in (Key.cmd, Key.cmd_l, Key.shift, Key.shift_l):
-                if self.estado == "PTT":
-                    self._parar()
-                    self.estado = "IDLE"
-                elif self.estado in ("ARMADO", "ENCERRANDO"):
-                    self._cancelar_timer()
-                    self.estado = "IDLE"
+        def _fn_subiu(self):
+            if self.estado == "PTT":
+                self._parar()
+                self.estado = "IDLE"
+            elif self.estado in ("ARMADO", "ENCERRANDO"):
+                self._cancelar_timer()
+                self.estado = "IDLE"
+
+        def _espaco(self):
+            if self.estado in ("ARMADO", "PTT"):
+                self._cancelar_timer()
+                if self.estado == "ARMADO":
+                    self.app.fila_cmd.put(("iniciar", self.alt_pressionado))
+                self.estado = "TRAVADO"
 
         def _virar_ptt(self):
-            if self.estado == "ARMADO" and self._modificadores():
+            if self.estado == "ARMADO" and self.fn_baixa:
                 self.estado = "PTT"
                 self.app.fila_cmd.put(("iniciar", self.alt_pressionado))
 
@@ -242,12 +269,22 @@ else:
                 self.timer = None
 
         def rodar(self):
-            try:
-                from pynput import keyboard
-            except ImportError:
-                print("[erro] falta o pynput: uv pip install pynput", file=sys.stderr)
-                return
-            # o listener nasce depois da liberação, senão ele sobe surdo
+            from Quartz import (CFMachPortCreateRunLoopSource, CFRunLoopAddSource,
+                                CFRunLoopGetCurrent, CFRunLoopRun, CGEventMaskBit,
+                                CGEventTapCreate, CGEventTapEnable, kCFRunLoopCommonModes,
+                                kCGEventFlagsChanged, kCGEventKeyDown,
+                                kCGHeadInsertEventTap, kCGSessionEventTap,
+                                kCGEventTapOptionListenOnly)
+            # a escuta nasce depois da liberação, senão ela sobe surda
             esperar_confianca()
-            with keyboard.Listener(on_press=self._descer, on_release=self._subir) as ouvinte:
-                ouvinte.join()
+            tap = CGEventTapCreate(
+                kCGSessionEventTap, kCGHeadInsertEventTap, kCGEventTapOptionListenOnly,
+                CGEventMaskBit(kCGEventFlagsChanged) | CGEventMaskBit(kCGEventKeyDown),
+                self._evento, None)
+            if not tap:
+                print("[erro] não consegui ouvir o teclado", file=sys.stderr)
+                return
+            fonte = CFMachPortCreateRunLoopSource(None, tap, 0)
+            CFRunLoopAddSource(CFRunLoopGetCurrent(), fonte, kCFRunLoopCommonModes)
+            CGEventTapEnable(tap, True)
+            CFRunLoopRun()

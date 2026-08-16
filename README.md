@@ -51,6 +51,10 @@ existe servidor para cair, não existe limite de minutos por mês.
 | Clica no ícone da bandeja | Abre o histórico de tudo que você já ditou |
 | Corrige uma palavra no campo | O programa aprende a sua grafia e nunca mais erra aquela palavra |
 
+No macOS as teclas são as do teclado de lá: a **`Fn`** no lugar de `Ctrl` + `Shift`,
+`Fn` + `Espaço` para as mãos livres, e o **`Control`** no lugar do `Alt` para a
+revisão.
+
 O texto vai para onde o cursor estiver: editor de código, campo de chat, e-mail,
 terminal, formulário no navegador. Se o programa aceita texto, ele aceita a sua voz.
 

@@ -126,6 +126,12 @@ cp -R "$raiz_python" "$RECURSOS/python"
 ok "Python embarcado no aplicativo ($(du -sh "$RECURSOS/python" | cut -f1))"
 
 uv venv --python "$RECURSOS/python/bin/python3.12" "$VENV" >/dev/null
+
+# O macOS mostra o nome do arquivo do interpretador quando pede microfone e
+# acessibilidade, então o arquivo leva o nome do programa. É o que faz a lista
+# de Ajustes ter uma linha só, escrita "Whisper Fogo".
+cp "$("$PYTHON" -c 'import os, sys; print(os.path.realpath(sys.executable))')" \
+   "$VENV/bin/Whisper Fogo"
 ok "Ambiente Python isolado criado"
 
 echo "  Instalando as bibliotecas (pode levar alguns minutos)..."
@@ -197,7 +203,7 @@ titulo "Finalizando o aplicativo"
 cat > "$APP/Contents/MacOS/whisper-fogo" <<'LANCADOR'
 #!/bin/bash
 AQUI="$(cd "$(dirname "$0")/.." && pwd)"
-exec "$AQUI/Resources/venv/bin/python" "$AQUI/Resources/app/voz.py"
+exec "$AQUI/Resources/venv/bin/Whisper Fogo" "$AQUI/Resources/app/voz.py"
 LANCADOR
 chmod +x "$APP/Contents/MacOS/whisper-fogo"
 cat > "$APP/Contents/Info.plist" <<PLIST
@@ -235,9 +241,9 @@ cat <<'FIM'
   Sem a segunda, o atalho global não funciona.
 
   Como usar:
-    Segure Command + Shift ........ fala e solta, o texto cola sozinho
-    Command + Shift + Espaço ...... mãos livres, a mesma tecla encerra
-    Somar Option .................. revisa o texto antes de colar
+    Segure a tecla Fn ............. fala e solta, o texto cola sozinho
+    Fn + Espaço ................... mãos livres, a Fn de novo encerra
+    Somar Control ................. revisa o texto antes de colar
     Ícone na barra de menus ....... abre o histórico de ditados
 
   O aprendizado por correção no campo ainda não funciona no macOS: depende da
