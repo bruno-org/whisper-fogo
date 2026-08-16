@@ -134,11 +134,11 @@ def _icone(estado):
         ImageDraw.Draw(base).ellipse([8, 8, L - 8, L - 8], fill=(200, 80, 60, 255))
     if estado == "ocioso":                       # brasa apagada: modelo fora da GPU
         if MAC:
-            # A barra de menus do macOS é translúcida e muda de claro para
-            # escuro conforme o fundo. Quem resolve isso é o próprio sistema,
-            # desde que receba a silhueta: ele pinta de branco sobre barra
-            # escura e de preto sobre barra clara, como faz com os ícones dele.
-            silhueta = Image.new("RGBA", base.size, (0, 0, 0, 255))
+            # Na barra de menus do macOS a chama vai como silhueta branca, no
+            # mesmo tom dos ícones que o sistema desenha ao lado. A silhueta
+            # ainda é marcada como imagem de sistema na hora de exibir, e aí o
+            # próprio macOS escolhe o tom conforme o fundo da barra.
+            silhueta = Image.new("RGBA", base.size, (255, 255, 255, 255))
             silhueta.putalpha(base.getchannel("A"))
             base = silhueta
         else:
@@ -195,13 +195,19 @@ class WhisperFogo:
             self.tray.icon = _icone(nome)
             self.tray.title = f"Whisper Fogo ({nome})"
             if MAC:
-                # avisa o macOS de que a silhueta é dele para pintar; nos estados
-                # com cor a imagem vai como está, para a cor chegar à tela
-                try:
-                    imagem = self.tray._status_item.button().image()
-                    imagem.setTemplate_(nome == "ocioso")
-                except Exception:
-                    pass
+                # A marcação vale para a imagem que já está na barra, e a troca
+                # acima acontece na fila do sistema. O adiamento curto garante
+                # que quem recebe a marca é a imagem nova, e não a anterior.
+                threading.Timer(0.3, self._marcar_silhueta, [nome]).start()
+
+    def _marcar_silhueta(self, ocioso):
+        """Diz ao macOS que a chama em repouso é um desenho de sistema, para ele
+        escolher o tom conforme o fundo da barra. Nos estados com cor a imagem
+        vai como está, senão a cor não chegaria à tela."""
+        try:
+            self.tray._status_item.button().image().setTemplate_(ocioso == "ocioso")
+        except Exception:
+            pass
 
     # ---------- modelo ----------
     def carregar(self):

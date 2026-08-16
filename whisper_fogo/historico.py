@@ -95,7 +95,12 @@ def main():
     raiz.minsize(720, 420)
     icone = CODIGO / "fogo.ico"
     if icone.exists():
-        raiz.iconbitmap(default=str(icone))   # default: vale para a janela e a barra
+        try:
+            # o `default` vale para a janela e a barra, e existe só no Windows.
+            # No macOS a janela já nasce com o ícone do próprio aplicativo.
+            raiz.iconbitmap(default=str(icone))
+        except tk.TclError:
+            pass
     tema.aplicar(raiz)                        # fundo e barra de título na cor da marca
 
     corpo = tkfont.Font(family="Segoe UI", size=11)
