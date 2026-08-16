@@ -11,8 +11,6 @@ Sem nuvem, sem mensalidade, sem enviar suas informações para servidor nenhum.
 
 <a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.bat"><img src="docs/img/botao-windows.svg" alt="Baixar o instalador para Windows" height="28"></a>&nbsp;&nbsp;<a href="https://github.com/bruno-org/whisper-fogo/releases/latest/download/Instalar-Whisper-Fogo.zip"><img src="docs/img/botao-macos.svg" alt="Baixar o instalador para macOS" height="28"></a>
 
-<br>
-
 <sub><b>Os dois sistemas mostram um aviso de segurança na primeira abertura</b>, porque o programa não é assinado com conta paga.<br>
 <b>Windows:</b> clique em "Mais informações" e depois em "Executar assim mesmo".<br>
 <b>macOS:</b> feche o aviso, abra Ajustes do Sistema &gt; Privacidade e Segurança, role até o fim e clique em "Abrir Mesmo Assim".<br>
@@ -69,6 +67,9 @@ terminal, formulário no navegador. Se o programa aceita texto, ele aceita a sua
 <img src="docs/img/historico.png" alt="Janela de histórico do Whisper Fogo" width="820">
 <br>
 <sub>O asterisco à esquerda da data marca o ditado que passou pela revisão de texto, a que você aciona somando <code>Alt</code> enquanto fala, ou <code>Control</code> no Mac.</sub>
+
+<br>
+
 </div>
 
 Toda transcrição é salva **antes** de ir para a área de transferência. Se você
