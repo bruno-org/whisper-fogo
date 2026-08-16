@@ -164,22 +164,22 @@ transcrevendo, numa RTX 4050 de notebook e num MacBook Air M1.
 
 |  | Mínimo | Recomendado | Ideal |
 |---|---|---|---|
-| **Placa de vídeo** | nenhuma, roda na CPU | NVIDIA com **4 GB** de VRAM | NVIDIA com **6 GB** ou mais |
+| **Placa de vídeo** | nenhuma, roda na CPU | NVIDIA com 4 GB de VRAM | NVIDIA com 6 GB ou mais |
 | **VRAM livre** | zero | 2,5 GB | 6 GB |
 | **Memória RAM** | 4 GB | 8 GB | 16 GB ou mais |
 | **Disco** | 4 GB | 8 GB | 8 GB |
-| **Velocidade** | ~1,4x o tempo real | ~15x | **~29x** |
+| **Velocidade** | ~1,4x o tempo real | ~15x | ~29x |
 | **O que dá para usar** | só transcrição | transcrição e revisão, uma de cada vez | transcrição e revisão juntas na memória |
 
 **No macOS**
 
 |  | Mínimo | Recomendado | Ideal |
 |---|---|---|---|
-| **Chip** | Intel Core i5 | **Apple Silicon** M1 ou M2 | Apple Silicon **Pro, Max ou M3** em diante |
+| **Chip** | Intel Core i5 | Apple Silicon M1 ou M2 | Apple Silicon Pro, Max ou M3 em diante |
 | **Sistema** | macOS 11 | macOS 13 | macOS 14 ou mais novo |
 | **Memória RAM** | 8 GB | 8 GB | 16 GB ou mais |
 | **Disco** | 7 GB | 7 GB | 7 GB |
-| **Velocidade** | ~1,2x o tempo real | **~2x** | ~4x |
+| **Velocidade** | ~1,2x o tempo real | ~2x | ~4x |
 | **O que dá para usar** | só transcrição | transcrição e revisão, uma de cada vez | transcrição e revisão juntas na memória |
 
 **Traduzindo a velocidade:** o número é quantas vezes mais rápido que o tempo
